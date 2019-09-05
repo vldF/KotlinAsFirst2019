@@ -65,19 +65,12 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String {
-    if (age < 15) {
-        return when (age) {
-            1 -> "1 год"
-            in 2..4 -> "$age года"
-            else -> "$age лет"
-        }
-    }
-    if (age == 111) return "111 лет"
-    return when (age % 10) {
-        1 -> "$age год"
-        in 2..4 -> "$age года"
-        else -> "$age лет"
-    }
+    val mod1 = age % 100
+    val mod2 = mod1 % 10
+    if (mod1 in 11..19) return "$age лет"
+    if (mod2 in 2..4) return "$age года"
+    if (mod2 == 1) return "$age год"
+    return "$age лет"
 }
 
 /**
