@@ -67,7 +67,15 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var num = n
+    var result = 0
+    while (num > 0) {
+        num /= 10
+        result++
+    }
+    return result
+}
 
 /**
  * Простая
@@ -75,7 +83,18 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int {
+    if (n < 3) return 1
+    var a = 1
+    var b = 1
+
+    for (i in 3..n) {
+        val j = a + b
+        a = b
+        b = j
+    }
+    return b
+}
 
 /**
  * Простая
@@ -83,21 +102,48 @@ fun fib(n: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    // Да, можно использовать алгоритм разложения Евклида для обоих чисел, а затем перемножать полученые делители.
+    // Но я не хочу стрелять пушкой по воробьям
+
+    var r = m * n
+    var last = 0
+    while (r > 0){
+        if (r % m == 0 && r % n == 0) last = r
+        r--
+
+        if (r < m || r < n) break
+    }
+    return last
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    var t = 2
+    while (t < n){
+        if (n % t == 0) return t
+        t++
+    }
+    return t
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    var t = n - 1
+    while (t > 0) {
+        if (n % t == 0) return t
+        t--
+    }
+    return t
+}
 
 /**
  * Простая
@@ -106,7 +152,20 @@ fun maxDivisor(n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean {
+    var b = if (m >= n) m else n // biggest number
+    var l = if (m <= n) m else n // lower number
+    var result = 1
+    var r = b % l
+    var q = b / l
+
+    while (r != 0) {
+        result = r
+        r = b % l
+        q = b / l
+    }
+    return true
+}
 
 /**
  * Простая
