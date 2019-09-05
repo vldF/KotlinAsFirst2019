@@ -5,6 +5,7 @@ package lesson2.task1
 import lesson1.task1.discriminant
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -67,10 +68,12 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
 fun ageDescription(age: Int): String {
     val mod1 = age % 100
     val mod2 = mod1 % 10
-    if (mod1 in 11..19) return "$age лет"
-    if (mod2 in 2..4) return "$age года"
-    if (mod2 == 1) return "$age год"
-    return "$age лет"
+    return when {
+        mod1 in 11..19 -> "$age лет"
+        mod2 in 2..4 -> "$age года"
+        mod2 == 1 -> "$age год"
+        else -> "$age лет"
+    }
 }
 
 /**
@@ -134,8 +137,7 @@ fun rookOrBishopThreatens(
 ): Int {
     var r = 0
     if (kingX == rookX || kingY == rookY) r = 1
-    if (abs(kingX - bishopX) == abs(kingY - bishopY) ||
-        abs(kingX - bishopY) == abs(kingY - bishopX)) r += 2
+    if (abs(kingX - bishopX) == abs(kingY - bishopY)) r += 2
     return r
 }
 
@@ -148,9 +150,12 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if (a > b + c || b > a + c || c > b + a) return -1
-    if (a * a == b * b + c * c || b * b == c * c + a * a || c * c == a * a + b * b) return 1
-    if (a * a > b * b + c * c || b * b > a * a + c * c || c * c > a * a + b * b) return 2
+    val maxSide = max(a, max(b, c))
+    val minSide = min(a, min(b, c))
+    val anotherSide = a + b + c - maxSide - minSide
+    if (maxSide >= minSide + anotherSide) return -1
+    if (maxSide * maxSide == minSide * minSide + anotherSide * anotherSide) return 1
+    if (maxSide * maxSide > minSide * minSide + anotherSide * anotherSide) return 2
     return 0
 }
 
@@ -163,17 +168,8 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (a <= c) {
-        if (c <= b) {
-            if (d <= b) return d - c
-            return b - c
-        }
-    } else {
-        if (a <= d) {
-            if (b <= d) return b - a
-            return d - a
-        }
-    }
-
-    return -1
+    if (max(a, b) < min(c, d)) return -1
+    if (max(a, b) > d) return d - c
+    if (b >= c) return b - c
+    return 1
 }
