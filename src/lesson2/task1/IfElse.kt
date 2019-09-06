@@ -168,17 +168,6 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (a <= c) {
-        if (c <= b) {
-            if (d <= b) return d - c
-            return b - c
-        }
-    } else {
-        if (a <= d) {
-            if (b <= d) return b - a
-            return d - a
-        }
-    }
-
-    return -1
+    val s = min(b, d) - max(a, c)
+    return if (s >= 0) s else -1
 }
