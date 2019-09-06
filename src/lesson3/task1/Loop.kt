@@ -2,8 +2,6 @@
 
 package lesson3.task1
 
-import java.lang.Math.pow
-import java.util.function.Function
 import kotlin.math.*
 
 /**
@@ -105,21 +103,7 @@ fun fib(n: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    // Да, можно использовать алгоритм разложения Евклида для обоих чисел, а затем перемножать полученые делители.
-    // Но я не хочу стрелять пушкой по воробьям
-
-    var r = max(m, n)
-    var last = max(m, n)
-    while (r <= m * n) {
-        if (r % m == 0 && r % n == 0) {
-            last = r
-            break
-        }
-        r++
-    }
-    return last
-}
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
 
 /**
  * Простая
@@ -156,20 +140,12 @@ fun maxDivisor(n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var b = max(m, n)
-    var l = min(m, n)
-    var result = 0
-    var r = b % l
-
-    while (r != 0) {
-        result = r
-        r = b % l
-        b = l
-        l = r
-    }
-    return result == 1
+fun gcd(a: Int, b: Int): Int {
+    if (a == 0) return b
+    return gcd(b % a, a)
 }
+
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Простая
@@ -179,8 +155,12 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    val root = sqrt(m.toDouble()).toInt().toDouble()
-    return root.pow(2.0).toInt() in (m - 1)..(n + 1) || (root + 1).pow(2.0).toInt() in (m - 1)..(n + 1)
+    val ml = m.toLong()
+    val nl = n.toLong()
+    val root = sqrt(m.toDouble()).toLong().toDouble()
+    val square = root.pow(2.0).toLong()
+    val squarePlus1 = (root + 1).pow(2.0).toLong()
+    return square in ml..nl || squarePlus1 in ml..nl
 }
 
 /**
