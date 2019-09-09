@@ -2,6 +2,7 @@
 
 package lesson3.task1
 
+import lesson1.task1.sqr
 import kotlin.math.*
 
 /**
@@ -103,7 +104,7 @@ fun fib(n: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
+fun lcm(m: Int, n: Int): Int = m / gcd(m, n) * n
 
 /**
  * Простая
@@ -111,12 +112,13 @@ fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var t = 2
-    while (t < n) {
+    if (n % 2 == 0) return 2
+    var t = 3
+    while (t < sqrt(n * 1.0) + 1) {
         if (n % t == 0) return t
-        t++
+        t += 2  // Вторая оптимизация
     }
-    return t
+    return n  // Чисо простое, обидочка((( Зочем такие тесты делать? P.S Ускорение в 189 раз
 }
 
 /**
@@ -157,7 +159,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 fun squareBetweenExists(m: Int, n: Int): Boolean {
     val ml = m.toLong()
     val nl = n.toLong()
-    val root = sqrt(m.toDouble()).toLong().toDouble()
+    val root = floor(sqrt(m.toDouble()))
     val square = root.pow(2.0).toLong()
     val squarePlus1 = (root + 1).pow(2.0).toLong()
     return square in ml..nl || squarePlus1 in ml..nl
@@ -191,6 +193,23 @@ fun collatzSteps(x: Int): Int {
 }
 
 /**
+ * Функция вычисляет значение тригонометрической функции (синуса или косинуса) по некоторым стартовым параметрам
+ */
+fun toRow(last: Double, eps: Double, step: Int, res: Double, arg: Double): Double {
+    var lst = last
+    var s = step
+    var r = res
+    var minus = true
+    while (abs(lst) >= eps) {
+        lst = arg.pow(s) / factorial(s) * (if (minus) -1 else 1)
+        s += 2
+        r += lst
+        minus = !minus
+    }
+    return r
+}
+
+/**
  * Средняя
  *
  * Для заданного x рассчитать с заданной точностью eps
@@ -199,20 +218,6 @@ fun collatzSteps(x: Int): Int {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun toRow(last: Double, eps: Double, step: Int, res: Double, arg: Double): Double {
-    var l = last
-    var s = step
-    var r = res
-    var minus = true
-    while (abs(l) >= eps) {
-        l = arg.pow(s) / factorial(s) * (if (minus) -1 else 1)
-        s += 2
-        r += l
-        minus = !minus
-    }
-    return r
-}
-
 fun sin(x: Double, eps: Double): Double {
     val arg = x - 2 * PI * (x / (2 * PI)).toInt()
     return toRow(arg, eps, 3, arg, arg)
@@ -283,24 +288,15 @@ fun hasDifferentDigits(n: Int): Boolean {
     return false
 }
 
-/**
- * Сложная
- *
- * Найти n-ю цифру последовательности из квадратов целых чисел:
- * 149162536496481100121144...
- * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
- *
- * Использовать операции со строками в этой задаче запрещается.
- */
 fun getDig(n: Int, f: (n: Int) -> Int): Int {
     var currentLen = 0
     var step = 1
     var res = 0
     while (currentLen < n) {
-        val fib = f(step)
-        var len = digitNumber(fib)
+        val functionValue = f(step)
+        var len = digitNumber(functionValue)
         if (currentLen + len >= n) {
-            res = fib
+            res = functionValue
             while (currentLen + len > n) {
                 res /= 10
                 len--
@@ -314,8 +310,17 @@ fun getDig(n: Int, f: (n: Int) -> Int): Int {
     return res
 }
 
-fun square(n: Int): Int = n * n
-fun squareSequenceDigit(n: Int): Int = getDig(n, ::square)
+
+/**
+ * Сложная
+ *
+ * Найти n-ю цифру последовательности из квадратов целых чисел:
+ * 149162536496481100121144...
+ * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
+ *
+ * Использовать операции со строками в этой задаче запрещается.
+ */
+fun squareSequenceDigit(n: Int): Int = getDig(n, ::sqr)
 
 /**
  * Сложная
