@@ -296,7 +296,7 @@ fun decimalFromString(str: String, base: Int): Int {
 fun roman(n: Int): String {
     val thousands = listOf("M", "MM", "MMM")
     val hundreds = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
-    val dozens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXX", "XC")
+    val dozens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
     val units = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     var num = n
     val res = StringBuilder()
@@ -378,7 +378,7 @@ fun russian(n: Int): String {
         res.add(
             when (k) {
                 in 1..19 -> digOne[k - 1]
-                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digOne[k % 10 - 1] else "")
+                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 >= 0) " " + digOne[k % 10 - 1] else "")
             }
         )
     }

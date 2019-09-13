@@ -220,7 +220,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var name: String? = null
+    var name = ""
     var minCost = Double.MAX_VALUE
     for ((productName, p) in stuff) {
         if (p.first == kind && p.second < minCost) {
@@ -241,8 +241,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    for (i in word) {
-        if (!chars.contains(i)) return false
+    for (i in word.toLowerCase()) {
+        if (!chars.contains(i) && !chars.contains(i.toUpperCase())) return false
     }
     return true
 }
@@ -424,7 +424,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     }
 
     var m = 0
-    var result = setOf<String>()
+    var result = emptySet<String>()
     for (firstIdx in 0 until capacity) {
         for (secondIdx in treasures.values.indices) {
             if (cells[firstIdx][secondIdx] > m) {

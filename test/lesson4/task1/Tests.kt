@@ -230,6 +230,7 @@ class Tests {
         assertEquals("MCMLXXVIII", roman(1978))
         assertEquals("DCXCIV", roman(694))
         assertEquals("XLIX", roman(49))
+        assertEquals("MMMCMLXXX", roman(3980))
     }
 
     @Test
@@ -243,5 +244,6 @@ class Tests {
         assertEquals("девятьсот тысяч", russian(900000))
         assertEquals("двенадцать", russian(12))
         assertEquals("девятьсот сорок тысяч девятьсот девяносто два", russian(940992))
+        assertEquals("шестьсот двадцать семь тысяч шестьсот пятьдесят один", russian(627651))
     }
 }
