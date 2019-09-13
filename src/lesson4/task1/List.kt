@@ -192,14 +192,18 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 
 fun factorize(n: Int): List<Int> {
     val res = mutableListOf<Int>()
-    var divisor = 2
+    var divisor = 3
     var num = n
+    while (num % 2 == 0) {
+        num /= 2
+        res.add(2)
+    }
     while (num > 1) {
         while (num % divisor == 0) {
             num /= divisor
             res.add(divisor)
         }
-        divisor += if (divisor == 2) 1 else (2)  // Срабатывает только в первую итерацию, нужно для оптимизации
+        divisor += 2
     }
     return res
 }
@@ -221,13 +225,12 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    if (n == 0) return listOf(0)
     var num = n
     val res = mutableListOf<Int>()
-    while (num != 0) {
+    do {
         res.add(num % base)
         num /= base
-    }
+    } while (num != 0)
     return res.reversed()
 }
 
@@ -243,11 +246,11 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String {
-    val chars = mutableListOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-    for (i in 0..25) chars.add((97 + i).toChar())
-    val coded = convert(n, base)
     val res = mutableListOf<Char>()
-    for (i in coded) res.add(chars[i])
+    for (c in convert(n, base)) {
+        if (c < 10) res.add(('0' + c))
+        else res.add('a' + (c - 10))
+    }
     return res.joinToString(separator = "")
 }
 
@@ -274,22 +277,10 @@ fun decimal(digits: List<Int>, base: Int): Int =
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int {
-    val map = mutableMapOf(
-        '1' to 1,
-        '2' to 2,
-        '3' to 3,
-        '4' to 4,
-        '5' to 5,
-        '6' to 6,
-        '7' to 7,
-        '8' to 8,
-        '9' to 9
-    )
-    for (i in 0..25) map[(97 + i).toChar()] = i + 10
     var res = 0
     for (i in str.indices) {
         res *= base
-        res += map[str[i]] ?: 0
+        res += if (str[i] in 'a'..'z') str[i] - 'a' + 10 else str[i] - '0'
     }
     return res
 }
@@ -303,28 +294,32 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
+    val thousands = listOf("M", "MM", "MMM")
+    val hundreds = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val dozens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXX", "XC")
+    val units = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     var num = n
-    var res = ""
+    val res = StringBuilder()
     if (num >= 1000) {
         val firstDigit = n / 1000 % 10
-        res += "M MM MMM".split(" ")[firstDigit - 1]
+        res.append(thousands[firstDigit - 1])
         num -= 1000 * firstDigit
     }
     if (num >= 100) {
         val secondDigit = n / 100 % 10
-        res += "C CC CCC CD D DC DCC DCCC CM".split(" ")[secondDigit - 1]
+        res.append(hundreds[secondDigit - 1])
         num -= 100 * secondDigit
     }
     if (num >= 10) {
         val thirtDigit = n / 10 % 10
-        res += "X XX XXX XL L LX LXX LXXX XC".split(" ")[thirtDigit - 1]
+        res.append(dozens[thirtDigit - 1])
         num -= 10 * thirtDigit
     }
     if (num > 0) {
         val lastDigit = n % 10
-        res += "I II III IV V VI VII VIII IX".split(" ")[lastDigit - 1]
+        res.append(units[lastDigit - 1])
     }
-    return res
+    return res.toString()
 }
 
 /**
@@ -349,7 +344,7 @@ fun russian(n: Int): String {
     val digFour = arrayOf(
         "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"
     )
-    var res = ""
+    val res = mutableListOf<String>()
     var num = n
     var thousands = false
     var triggerThousandsAdded = false
@@ -357,42 +352,46 @@ fun russian(n: Int): String {
         thousands = true
         val k = num / 100000
         num -= k * 100000
-        res += digThree[k - 1] + " "
+        res.add(digThree[k - 1])
     }
     if (num >= 1000) {
         val k = num / 1000 % 100
         num -= k * 1000
-        res += when {
-            k < 5 -> digFour[k - 1] + " тысячи "
-            k in 5..19 -> digOne[k - 1] + " тысяч "
-            else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digFour[k % 10 - 1] else "") + trueThous(k)
-        }
+        res.add(
+            when {
+                k < 5 -> digFour[k - 1] + " тысячи"
+                k in 5..19 -> digOne[k - 1] + " тысяч"
+                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digFour[k % 10 - 1] else "") + trueThous(k)
+            }
+        )
         triggerThousandsAdded = true
     }
-    if (!triggerThousandsAdded && thousands) res += "тысяч "
+    if (!triggerThousandsAdded && thousands) res.add("тысяч")
     if (num > 100) {
         val k = num / 100
         num -= k * 100
-        res += digThree[k - 1] + " "
+        res.add(digThree[k - 1])
     }
     if (num > 0) {
         val k = num % 100
         num -= k
-        res += when (k) {
-            in 1..19 -> digOne[k - 1]
-            else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digFour[k % 10 - 1] else "")
-        }
+        res.add(
+            when (k) {
+                in 1..19 -> digOne[k - 1]
+                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digOne[k % 10 - 1] else "")
+            }
+        )
     }
-    return res.trimEnd()
+    return res.joinToString(separator = " ")
 }
 
 fun trueThous(num: Int): String {
     val mod1 = num % 100
     val mod2 = mod1 % 10
     return when {
-        mod1 in 11..19 -> " тысяч "
-        mod2 in 2..4 -> " тысячи "
-        mod2 == 1 -> " тысяча "
-        else -> " тысяч "
+        mod1 in 11..19 -> " тысяч"
+        mod2 in 2..4 -> " тысячи"
+        mod2 == 1 -> " тысяча"
+        else -> " тысяч"
     }
 }

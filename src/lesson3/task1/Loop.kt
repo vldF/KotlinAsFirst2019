@@ -126,14 +126,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var t = n - 1
-    while (t > 0) {
-        if (n % t == 0) return t
-        t--
-    }
-    return t
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая
