@@ -220,7 +220,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var name = ""
+    var name: String? = null
     var minCost = Double.MAX_VALUE
     for ((productName, p) in stuff) {
         if (p.first == kind && p.second < minCost) {
@@ -402,7 +402,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val cells = Array(capacity) { Array(treasures.size) { 0 } }  // Массив для динамики
     val treasuresResult = Array(capacity) { Array(treasures.size) { setOf<String>() } }
-    for (w in 1 until cells.size) {
+    for (w in cells.indices) {
         for (i in 1 until cells[w].size) {
             val p = treasures.values.elementAt(i - 1)
             val name = treasures.keys.elementAt(i - 1)

@@ -361,7 +361,7 @@ fun russian(n: Int): String {
             when {
                 k < 5 -> digFour[k - 1] + " тысячи"
                 k in 5..19 -> digOne[k - 1] + " тысяч"
-                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 > 0) " " + digFour[k % 10 - 1] else "") + trueThous(k)
+                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 >= 0) " " + digFour[k % 10 - 1] else "") + trueThous(k)
             }
         )
         triggerThousandsAdded = true
