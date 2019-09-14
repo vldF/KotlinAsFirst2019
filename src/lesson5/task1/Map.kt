@@ -400,39 +400,13 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    // Массивы для динамики
-    val cells = Array(capacity + 1) { Array(treasures.size + 1) { 0 } }
-    val treasuresResult = Array(capacity + 1) { Array(treasures.size + 1) { setOf<String>() } }
-
-    for (w in cells.indices) {
-        for (i in 1 until cells[w].size) {
-            val p = treasures.values.elementAt(i - 1)
-            val name = treasures.keys.elementAt(i - 1)
-            if (w - p.first < 0) {
-                cells[w][i] = cells[w][i - 1]
-                treasuresResult[w][i] = treasuresResult[w][i - 1] + name
-            } else {
-                val v1 = p.second + cells[w - p.first][i - 1]
-                val v2 = cells[w - p.first][i - 1]
-                if (v1 > v2) {
-                    cells[w][i] = v1
-                    treasuresResult[w][i] = treasuresResult[w][i - 1] + name
-                } else {
-                    cells[w][i] = v2
-                    treasuresResult[w][i] = treasuresResult[w - p.first][i - 1] + name
-                }
-            }
-        }
-    }
-
-    var m = 0
-    var result = emptySet<String>()
-    for (firstIdx in 0 until capacity + 1) {
-        for (secondIdx in 0 until treasures.values.size + 1) {
-            if (cells[firstIdx][secondIdx] > m) {
-                m = cells[firstIdx][secondIdx]
-                result = treasuresResult[firstIdx][secondIdx]
-            }
+    val treasuresRepriced = treasures.toList().sortedBy { (_, value) -> -value.second * 1.0 / value.first }
+    var currentSum = 0
+    val result = mutableSetOf<String>()
+    for ((name, pair) in treasuresRepriced) {
+        if (pair.first + currentSum <= capacity) {
+            currentSum += pair.first
+            result += name
         }
     }
     return result
