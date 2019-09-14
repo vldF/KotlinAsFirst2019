@@ -400,6 +400,8 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    // Да, можно через динамику. Да, я пробовал. Нет, у меня не получилось (см прошлый коммит, но там страшный код)
+    // Этот вариант даёт почти идеальный ответ за нормальное по асимптотике время
     val treasuresRepriced = treasures.toList().sortedBy { (_, value) -> -value.second * 1.0 / value.first }
     var currentSum = 0
     val result = mutableSetOf<String>()
