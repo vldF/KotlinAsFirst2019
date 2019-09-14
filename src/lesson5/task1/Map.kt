@@ -400,16 +400,34 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    // Да, можно через динамику. Да, я пробовал. Нет, у меня не получилось (см прошлый коммит, но там страшный код)
-    // Этот вариант даёт почти идеальный ответ за нормальное по асимптотике время
-    val treasuresRepriced = treasures.toList().sortedBy { (_, value) -> -value.second * 1.0 / value.first }
-    var currentSum = 0
-    val result = mutableSetOf<String>()
-    for ((name, pair) in treasuresRepriced) {
-        if (pair.first + currentSum <= capacity) {
-            currentSum += pair.first
-            result += name
+    val n = treasures.size
+    val dp = Array(capacity + 1) { Array(n + 1) { 0 } }
+    for (j in 1..n) {
+        for (w in 1..capacity) {
+            val itemKey = treasures.keys.elementAt(j - 1)
+            val pair = treasures.getValue(itemKey)
+            if (pair.first <= w) {
+                dp[w][j] = max(dp[w][j - 1], dp[w - pair.first][j - 1] + pair.second)
+            } else {
+                dp[w][j] = dp[w][j - 1]
+            }
         }
     }
-    return result
+
+    val res = mutableSetOf<String>()
+    // Вложенная функция для восстановления списка предметов
+    fun findAns(k: Int, s: Int) {
+        if (dp[s][k] == 0) return
+        if (dp[s][k - 1] == dp[s][k]) findAns(k - 1, s)
+        else {
+            val itemName = treasures.keys.elementAt(k - 1)
+            val pair = treasures.getValue(itemName)
+            findAns(k - 1, s - pair.first)
+            res.add(itemName)
+        }
+    }
+
+    findAns(n, capacity)
+    return res
 }
+

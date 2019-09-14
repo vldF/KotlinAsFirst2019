@@ -6,6 +6,27 @@ import lesson1.task1.discriminant
 import kotlin.math.log
 import kotlin.math.pow
 import kotlin.math.sqrt
+// Таблица с записями чисел для последней задачи
+val digOne = arrayOf(
+    "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять",
+    "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать",
+    "восемнадцать", "девятнадцать"
+)
+val digTwo = arrayOf(
+    "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
+)
+val digThree = arrayOf(
+    "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
+)
+val digFour = arrayOf(
+    "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"
+)
+
+// Таблицы для римски чисел
+val thousands = listOf("M", "MM", "MMM")
+val hundreds = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+val dozens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+val units = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
 
 /**
  * Пример
@@ -294,10 +315,6 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val thousands = listOf("M", "MM", "MMM")
-    val hundreds = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
-    val dozens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
-    val units = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     var num = n
     val res = StringBuilder()
     if (num >= 1000) {
@@ -330,20 +347,6 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    val digOne = arrayOf(
-        "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять",
-        "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать",
-        "восемнадцать", "девятнадцать"
-    )
-    val digTwo = arrayOf(
-        "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
-    )
-    val digThree = arrayOf(
-        "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"
-    )
-    val digFour = arrayOf(
-        "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"
-    )
     val res = mutableListOf<String>()
     var num = n
     var thousands = false
