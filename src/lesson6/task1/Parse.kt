@@ -99,6 +99,7 @@ fun main() {
 fun dateStrToDigit(str: String): String {
     val parts = str.split(" ")
     if (parts.size != 3) return ""
+    if (!isNumber(parts[0]) || !isNumber(parts[2])) return ""
     val day = parts[0].toInt()
     val month = months.indexOf(parts[1]) + 1
     val year = parts[2].toInt()
@@ -179,6 +180,7 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
+    if (jumps.isBlank()) return -1
     for (c in jumps) {
         if (c != '-' && c != ' ' && c != '%' && !c.isDigit()) return -1
     }
@@ -217,6 +219,7 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    require(expression.isNotEmpty()) { "java.lang.NumberFormatException: Only signed numbers are allowed" } // todo
     val tokens = expression.split(" ")
     var sum = if (isNumber(tokens[0])) tokens[0].toInt() else throw IllegalArgumentException()
     var isLastOperator = false
@@ -287,12 +290,15 @@ fun mostExpensive(description: String): String {
 fun maxCharsInRepite(str: String): Int {
     var currentChar = ' '
     var currentCount = 0
-    var maxRep = -1
+    var maxRep = 0
     for (i in str) {
         when {
             i == currentChar -> currentCount++
             currentCount > maxRep -> maxRep = currentCount
-            else -> currentChar = i
+            else -> {
+                currentChar = i
+                currentCount = 0
+            }
         }
     }
     return maxRep
@@ -362,6 +368,7 @@ fun validateBracket(str: String): Boolean {
         if (c == '[') bracketCount++
         else if (c == ']') bracketCount--
         idx++
+        if (bracketCount < 0) return false
     }
     return bracketCount == 0
 }
