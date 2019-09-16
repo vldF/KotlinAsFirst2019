@@ -181,9 +181,12 @@ fun flattenPhoneNumber(phone: String): String {
  */
 fun bestLongJump(jumps: String): Int {
     if (jumps.isBlank()) return -1
+    var hasNum = false
     for (c in jumps) {
         if (c != '-' && c != ' ' && c != '%' && !c.isDigit()) return -1
+        if (c.isDigit()) hasNum = true
     }
+    if (!hasNum) return -1
     return jumps.split(" ").filter { it[0].isDigit() }.map { it.toInt() }.max() ?: -1
 }
 
