@@ -444,5 +444,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         clock++
         commandsSteps++
     }
+    require(pos in 0 until cells)
     return line
 }
