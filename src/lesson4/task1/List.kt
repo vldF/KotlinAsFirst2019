@@ -267,7 +267,7 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String =
-    convert(n, base).map { if (it < 10) '0' + it else 'a' + (it - 10)}.joinToString(separator = "")
+    convert(n, base).map { if (it < 10) '0' + it else 'a' + (it - 10) }.joinToString(separator = "")
 
 /**
  * Средняя
