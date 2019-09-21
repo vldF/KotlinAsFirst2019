@@ -96,7 +96,8 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
     val res = mutableMapOf<Int, MutableList<String>>()
     for ((name, grade) in grades) {
-        if (res[grade] != null) res[grade]!!.add(name)
+        val currentGrade = res[grade]
+        if (currentGrade != null) currentGrade.add(name)
         else res[grade] = mutableListOf(name)
     }
     return res
@@ -114,7 +115,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     for ((key, value) in a) {
-        if (b[key] == null || b[key] != value) return false
+        if (b[key] != value) return false
     }
     return true
 }
@@ -135,7 +136,7 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
     for ((key, value) in b) {
-        if (a[key] == value && a.containsKey(key)) a.remove(key)
+        if (a[key] == value) a.remove(key)
     }
 }
 
@@ -169,8 +170,9 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     val resList = mutableMapOf<String, MutableList<String>>()
     for (i in listOf(mapA, mapB)) {
         for ((name, value) in i) {
-            if (resList.getOrDefault(name, mutableListOf()).contains(value)) continue
-            if (resList[name] != null) resList[name]!!.add(value)
+            val line = resList.getOrDefault(name, mutableListOf())
+            if (line.contains(value)) continue
+            if (line.isNotEmpty()) resList[name]!!.add(value)
             else resList[name] = mutableListOf(value)
         }
     }
@@ -195,8 +197,10 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
     val res = mutableMapOf<String, Double>()
     val counts = mutableMapOf<String, Int>()
     for ((name, price) in stockPrices) {
-        if (res[name] == null) res[name] = price else res[name] = res[name]!!.plus(price)
-        if (counts[name] == null) counts[name] = 1 else counts[name] = counts[name]!!.plus(1)
+        val priceByName = res[name]
+        val cnts = counts[name]
+        if (priceByName == null) res[name] = price else res[name] = priceByName + price
+        if (cnts == null) counts[name] = 1 else counts[name] = cnts + 1
     }
     for ((name, n) in counts) {
         res[name] = res[name]!!.div(n)
@@ -221,7 +225,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     var name: String? = null
-    var minCost = Double.MAX_VALUE
+    var minCost = Double.POSITIVE_INFINITY
     for ((productName, p) in stuff) {
         if (p.first == kind && p.second < minCost) {
             name = productName
@@ -241,8 +245,9 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    val charsSet = chars.toSet()
     for (i in word.toLowerCase()) {
-        if (!chars.contains(i) && !chars.contains(i.toUpperCase())) return false
+        if (!charsSet.contains(i) && !charsSet.contains(i.toUpperCase())) return false
     }
     return true
 }
@@ -277,28 +282,16 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    for (wordIndex in words.indices) {
-        for (wordIndexTwo in wordIndex + 1 until words.size) {
-            if (isAnagram(words[wordIndex], words[wordIndexTwo])) return true
+    val maps = mutableSetOf<Map<Char, Int>>()
+    for (word in words) {
+        val m = mutableMapOf<Char, Int>()
+        for (c in word) {
+            m[c] = m.getOrDefault(c, 0) + 1
         }
+        if (maps.contains(m)) return true
+        maps.add(m)
     }
     return false
-}
-
-/**
- * wordA is anagram of wordB
- */
-fun isAnagram(wordA: String, wordB: String): Boolean {
-    val charWordBMap = mutableMapOf<Char, Int>()
-    for (c in wordB) {
-        charWordBMap[c] = charWordBMap.getOrDefault(c, 0) + 1
-    }
-    for (c in wordA) {
-        if (charWordBMap.getOrDefault(c, 0) >= 1) {
-            charWordBMap[c] = charWordBMap.getOrDefault(c, 0) - 1
-        } else return false
-    }
-    return true
 }
 
 /**
@@ -371,9 +364,14 @@ fun findFriends(
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (i in list.indices) {
-        val idx = list.lastIndexOf(number - list[i])
-        if (idx != -1 && idx != i) return i to idx
+    val srtd = list.sorted()
+    for (i in srtd.indices) {
+        if (srtd[i] > number * 1.0 / 2) return -1 to -1
+        for (j in i + 1 until list.size) {
+            val sum = srtd[i] + srtd[j]
+            if (sum == number) return list.indexOf(srtd[i]) to list.lastIndexOf(srtd[j])
+            if (sum > number) break
+        }
     }
     return -1 to -1
 }

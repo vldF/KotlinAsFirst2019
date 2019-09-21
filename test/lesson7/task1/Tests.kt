@@ -120,9 +120,9 @@ Basic, Ruby, Swift.
     @Test
     @Tag("Hard")
     fun alignFileByWidth() {
-        alignFileByWidth("input/width_in1.txt", "temp.txt")
+        alignFileByWidth("input/width_in1.txt", "input/temp.txt")
         assertFileContent(
-            "temp.txt",
+            "input/temp.txt",
             """Простая
 
 Во       входном       файле       с       именем       inputName       содержится       некоторый      текст.

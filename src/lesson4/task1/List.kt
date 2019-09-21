@@ -3,9 +3,9 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import kotlin.math.log
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 // Таблица с записями чисел для последней задачи
 val digOne = arrayOf(
     "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять",
@@ -266,14 +266,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String {
-    val res = mutableListOf<Char>()
-    for (c in convert(n, base)) {
-        if (c < 10) res.add(('0' + c))
-        else res.add('a' + (c - 10))
-    }
-    return res.joinToString(separator = "")
-}
+fun convertToString(n: Int, base: Int): String =
+    convert(n, base).map { if (it < 10) '0' + it else 'a' + (it - 10)}.joinToString(separator = "")
 
 /**
  * Средняя
@@ -347,55 +341,46 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
+    val first = getTriad(n / 1000, true).toMutableList()
+    first.add(trueThous(n / 1000))
+    val last = getTriad(n % 1000, false)
+    val union = if (n > 1000) first + last else last
+    return union.joinToString(separator = " ")
+}
+
+fun getTriad(n: Int, thous: Boolean): List<String> {
     val res = mutableListOf<String>()
-    var num = n
-    var thousands = false
-    var triggerThousandsAdded = false
-    if (num >= 100000) {
-        thousands = true
-        val k = num / 100000
-        num -= k * 100000
-        res.add(digThree[k - 1])
+    val hundreds = n / 100
+    val dozens = n / 10 % 10
+    val units = n % 10
+    val lastTwoDigits = n % 100
+
+    if (hundreds != 0) {
+        res.add(digThree[hundreds - 1])
     }
-    if (num >= 1000) {
-        val k = num / 1000 % 100
-        num -= k * 1000
-        res.add(
-            when {
-                k == 1 -> digFour[k - 1] + " тысяча"
-                k < 5 -> digFour[k - 1] + " тысячи"
-                k in 5..19 -> digOne[k - 1] + " тысяч"
-                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 >= 0) " " + digFour[k % 10 - 1] else "") + trueThous(k)
-            }
-        )
-        triggerThousandsAdded = true
+    if (lastTwoDigits in 3..19 && thous || lastTwoDigits in 1..19 && !thous) {
+        res.add(digOne[lastTwoDigits - 1])
+        return res
+    } else if (lastTwoDigits in 1..2) {
+        res.add(digFour[lastTwoDigits - 1])
+        return res
     }
-    if (!triggerThousandsAdded && thousands) res.add("тысяч")
-    if (num > 100) {
-        val k = num / 100
-        num -= k * 100
-        res.add(digThree[k - 1])
+    if (dozens != 0) {
+        res.add(digTwo[dozens - 1])
     }
-    if (num > 0) {
-        val k = num % 100
-        num -= k
-        res.add(
-            when (k) {
-                in 1..19 -> digOne[k - 1]
-                else -> digTwo[k / 10 - 1] + (if (k % 10 - 1 >= 0) " " + digOne[k % 10 - 1] else "")
-            }
-        )
+    if (units != 0) {
+        res.add(if (thous) digFour[units - 1] else digOne[units - 1])
     }
-    return res.joinToString(separator = " ")
+    return res
 }
 
 fun trueThous(num: Int): String {
     val mod1 = num % 100
     val mod2 = mod1 % 10
     return when {
-        mod1 in 11..19 -> " тысяч"
-        mod2 in 2..4 -> " тысячи"
-        mod2 == 1 -> " тысяча"
-        else -> " тысяч"
+        mod1 in 11..19 -> "тысяч"
+        mod2 in 2..4 -> "тысячи"
+        mod2 == 1 -> "тысяча"
+        else -> "тысяч"
     }
 }

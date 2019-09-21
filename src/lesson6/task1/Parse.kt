@@ -222,7 +222,7 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    require(expression.isNotEmpty()) { "java.lang.NumberFormatException: Only signed numbers are allowed" } // todo
+    require(expression.isNotEmpty())
     val tokens = expression.split(" ")
     var sum = if (isNumber(tokens[0])) tokens[0].toInt() else throw IllegalArgumentException()
     var isLastOperator = false
