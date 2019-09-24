@@ -365,15 +365,15 @@ fun findFriends(
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val srtd = list.sorted()
-    val itemsSet = srtd.toHashSet()
+    val values = hashMapOf<Int, Int>()
+    (list.indices).map { values[list[it]] = it }
+
     for (i in srtd.indices) {
         if (srtd[i] > number * 1.0 / 2) return -1 to -1
         val delta = number - srtd[i]
-        if (delta in itemsSet) {
-            val idxFirst = list.indexOf(srtd[i])
-            val idxSecond = list.lastIndexOf(delta)
-            if (idxFirst != idxSecond) return idxFirst to idxSecond
-        }
+        val idxFirst = values[srtd[i]] ?: continue
+        val idxSecond = values[delta] ?: continue
+        if (idxFirst != idxSecond) return idxFirst to idxSecond
     }
     return -1 to -1
 }
