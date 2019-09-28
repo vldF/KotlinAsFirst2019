@@ -2,10 +2,11 @@
 
 package lesson7.task1
 
+import lesson3.task1.digitNumber
+import lesson3.task1.revert
 import java.io.File
 import java.lang.Integer.min
-import java.util.*
-import java.util.Stack
+import kotlin.math.pow
 
 /**
  * Пример
@@ -519,19 +520,19 @@ fun replaceCharsToTag(str: String, s: String, openTag: String, closeTag: String)
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
+    // Не доделал и нт идей, как доделать
     val inp = File(inputName).readLines()
-    val res = StringBuffer("<html><body>")
     val olIdxRegex = "^\\s*(\\d+)\\.\\s".toRegex() // todo remember to use 1 group
     val isUlRegex = "^\\s*[*]".toRegex()
     val olContentRegex = "^\\s*\\d+\\.\\s(.*)".toRegex()
     val ulContentRegex = "^\\s*\\*\\s(.+)".toRegex() // todo 1 group
-    val spacesAtStart = "^\\s*".toRegex()
-    var currentLevel = -1
+    val res = Node("html", StringBuilder())
+    res.insertedTags.add(Node("body", StringBuilder()))
+    var currentSpacesLvl = -1
 
-    val currentStack = Stack<String>()
-
-    for (line in inp) {
-        val currentSpaces = spacesAtStart.find(line)?.value?.length ?: 0
+    for (lineIdx in inp.indices) {
+        val line = inp[lineIdx]
+        val currentSpaces = getSpaces(line)
         val tag = when {
             isUlRegex.find(line) != null -> "ul"
             olIdxRegex.find(line)?.groupValues != null -> "ol"
@@ -541,28 +542,25 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             "ol" -> olContentRegex.find(line)!!.value
             else -> ulContentRegex.find(line)?.groupValues?.get(1) ?: ""
         }
-        if (currentSpaces > currentLevel) {
-            currentStack.add(tag)
-            res.append("<$tag>")
-            currentLevel = currentSpaces
-            res.append("<li>$content")
-            currentStack.add("li")
-            continue
-        } else if (currentSpaces < currentLevel) {
-            for (i in currentSpaces..currentLevel step 4)
-                res.append("</${currentStack.pop()}>")
-            currentLevel = currentSpaces
-        }
-        if (tag.isBlank()) {
-            res.append(line)
+        val lvl = res.getNodeByLvl(currentSpaces / 4 + 2)
+        if (tag.isNotEmpty()) {
+            val prevSpaces = if (lineIdx > 0) getSpaces(inp[lineIdx - 1]) else -1
+            var pointer: Node
+            pointer = when {
+                prevSpaces == -1 -> lvl.add(Node(tag))
+                prevSpaces < currentSpaces -> lvl.add(Node(tag))
+                prevSpaces == currentSpaces -> lvl.insertedTags.last()
+                else -> res.getNodeByLvl(currentSpaces / 4 + 1)
+            }
+            pointer.add(Node("li", StringBuilder(content)))
         } else {
-            res.append("<li>$content")
-            currentStack.add("li")
+            lvl.content.append(line)
         }
     }
-    res.append("</body></html>")
-    File(outputName).writeText(res.toString())
+    File(outputName).writeText(res.getText())
 }
+
+fun getSpaces(str: String): Int = "^\\s*".toRegex().find(str)?.value?.length ?: 0
 
 /**
  * Очень сложная
@@ -582,27 +580,48 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-19935
- *    111
+   19935
+*    111
 --------
-19935
+   19935
 + 19935
 +19935
 --------
-2212785
+ 2212785
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  * Нули в множителе обрабатывать так же, как и остальные цифры:
-235
- *  10
+  235
+*  10
 -----
-0
+    0
 +235
 -----
-2350
+ 2350
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val res = mutableListOf<String>()
+    val nums = mutableListOf<Int>()
+
+    var n = rhv
+    val ans = lhv * rhv
+    while (n > 0) {
+        nums.add(lhv * (n % 10))
+        n /= 10
+    }
+
+    val maxLen = digitNumber(nums.last()) + nums.size
+    res.add(" $ans")
+    res.add("-".repeat(maxLen))
+    var first = false
+    for ((spaces, num) in nums.reversed().withIndex()) {
+        if (spaces == nums.size - 1) first = true
+        res.add((if (!first) "+" else "") + " ".repeat(spaces + if(first) 1 else 0) + "$num")
+    }
+    res.add("-".repeat(maxLen))
+    res.add("*" + " ".repeat(maxLen - digitNumber(rhv) - 1) + "$rhv")
+    res.add(" ".repeat(maxLen - digitNumber(lhv)) + "$lhv")
+    File(outputName).writeText(res.reversed().joinToString(separator = "\n"))
 }
 
 
@@ -612,21 +631,37 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Вывести в выходной файл процесс деления столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 22):
-19935 | 22
--198     906
-----
-13
--0
---
-135
--132
-----
-3
-
+  19935 | 22
+ -198     906
+ ----
+    13
+    -0
+    --
+    135
+   -132
+   ----
+      3
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    // Не доделал
+    val res = mutableListOf<String>()
+    val ans = lhv / rhv
+    val mod = lhv % rhv
+    val firstLen = digitNumber(lhv)
+
+    res.add(" $lhv / $rhv")
+    var reversedRhv = revert(rhv)
+    var firstDigits = lhv / 10.0.pow(firstLen - digitNumber((reversedRhv % 10) * rhv))
+    var first = true
+    val delta = 0
+    while (reversedRhv > 0) {
+        val mul = reversedRhv % 10
+        reversedRhv /= 10
+        val k = firstDigits - mul * rhv
+        res.add("-$k")
+        res.add("-".repeat("-$k".length))
+    }
 }
 

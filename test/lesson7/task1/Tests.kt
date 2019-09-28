@@ -251,18 +251,25 @@ Basic, Ruby, Swift.
     }
 
     @Test
-    fun replaceCharsToTag() {
-        assertEquals(
-            "привет <a>, это тест </a>, как дела<a>, а***",
-            replaceCharsToTag("привет ***, это тест ***, как дела***, а***", "***", "<a>", "</a>")
-        )
-    }
-
-    @Test
     @Tag("Hard")
     fun markdownToHtmlSimple() {
         markdownToHtmlSimple("input/markdown_simple.md", "temp.html")
         checkHtmlSimpleExample()
+    }
+
+    private fun checkHtmlListsExample2() {
+        val result = File("temp.html").readText().replace(Regex("[\\s\\n\\t]"), "")
+        val expected =
+            """
+                    <html>
+                      <body>
+                        
+                      </body>
+                    </html>
+                    """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
+        assertEquals(expected, result)
+
+        File("temp.html").delete()
     }
 
     private fun checkHtmlListsExample() {
@@ -320,6 +327,8 @@ Basic, Ruby, Swift.
     @Test
     @Tag("Hard")
     fun markdownToHtmlLists() {
+        //markdownToHtmlLists("input/markdown_lists_1.md", "temp.html")
+        //checkHtmlListsExample()
         markdownToHtmlLists("input/markdown_lists.md", "temp.html")
         checkHtmlListsExample()
     }
