@@ -3,7 +3,9 @@
 package lesson7.task1
 
 import java.io.File
-import kotlin.math.ceil
+import java.lang.Integer.min
+import java.util.*
+import java.util.Stack
 
 /**
  * Пример
@@ -54,8 +56,16 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val inpText = File(inputName).readText().toLowerCase()
+    val res = mutableMapOf<String, Int>()
+    for (subStr in substrings) {
+        res[subStr] = strContainsStr(inpText, subStr.toLowerCase())
+    }
+    return res
+}
 
+fun strContainsStr(str: String, subStr: String) = str.windowed(subStr.length) { if (it == subStr) 1 else 0 }.sum()
 
 /**
  * Средняя
@@ -115,7 +125,7 @@ fun sibilants(inputName: String, outputName: String) {
  */
 fun centerFile(inputName: String, outputName: String) {
     val inp = File(inputName).readLines()
-    val maxLen = inp.maxBy { it.length }!!.length
+    val maxLen = (inp.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
 
     for (line in inp) {
@@ -155,25 +165,36 @@ fun centerFile(inputName: String, outputName: String) {
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
-    val maxLen = lines.maxBy { it.length }!!.length
+    val maxLen = (lines.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
 
-    for (line in lines) {
-        if (line == "\n") {
+    for (lineRow in lines) {
+        if (lineRow.isEmpty() || lineRow == "\n") {
             resText.append("\n")
             continue
         }
-        val clr = line.trim()
-        var fullLen = clr.length
-        var d = maxLen * 1.0 / fullLen
-        val formatedLine = StringBuilder()
-        for (word in clr.replace(Regex("\\s+"), " ")) {
-            formatedLine.append(word).append(" ".repeat(ceil(d).toInt()))
-            fullLen += ceil(d).toInt()
-            d = maxLen * 1.0 / fullLen
+        val line = lineRow.trim().replace(Regex("\\s+"), " ")
+        val splittedWords = line.split(" ")
+
+        if (splittedWords.size == 1) {
+            resText.append(splittedWords[0]).append("\n")
+            continue
         }
-        resText.append(formatedLine.toString()).append("\n")
+
+        val charsDelta = maxLen - line.length - 2
+        val toOneSpace = charsDelta / (splittedWords.size - 1)  // -1 за то, что пробелов между n словами n-1
+        var modSpaces = charsDelta % (splittedWords.size - 1)
+
+        val resLine = StringBuilder()
+        for (word in splittedWords.subList(0, splittedWords.size - 1)) {
+            resLine.append(word).append(" ".repeat(toOneSpace + 1))
+            if (modSpaces > 0) resLine.append(" ")
+            modSpaces--
+        }
+        resLine.append(splittedWords.last())
+        resText.append(resLine.append("\n").toString())
     }
+    File(outputName).writeText(resText.toString())
 }
 
 /**
@@ -194,7 +215,23 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val inp = File(inputName).readText().toLowerCase()
+    if (inp.isEmpty()) return mapOf<String, Int>()
+    val words = Regex("[а-яa-zё]*[^,.\\s!?_\\-\\d]").findAll(inp).map { it.value }
+    val untopped = mutableMapOf<String, Int>()
+
+    for (word in words) {
+        untopped[word] = untopped.getOrDefault(word, 0) + 1
+    }
+    val top = untopped.toSortedMap(compareBy<String> { untopped[it] }.thenBy { it })
+    val res = mutableMapOf<String, Int>()
+    for (key in top.keys) {
+        if (res.size == 20) break
+
+    }
+    return mapOf<String, Int>()
+}
 
 /**
  * Средняя
@@ -232,7 +269,18 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val text = File(inputName).readText()
+    val res = StringBuilder()
+    for (c in text) {
+        if (c == ' ' || c == '\n') res.append(c)
+        else {
+            val r = dictionary.getOrDefault(c.toLowerCase(), dictionary.getOrDefault(c.toUpperCase(), c.toString()))
+                .toLowerCase()
+            if (c.isUpperCase()) res.append(r.capitalize())
+            else res.append(r)
+        }
+    }
+    File(outputName).writeText(res.toString())
 }
 
 /**
@@ -260,7 +308,28 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val inp = File(inputName).readLines()
+    var maxLen = 0
+    val res = mutableListOf<String>()
+
+    for (line in inp) {
+        if (hasDifferentLetters(line)) {
+            if (line.length > maxLen) {
+                res.clear()
+                maxLen = line.length
+            } else if (line.length < maxLen) {
+                continue
+            }
+            res.add(line)
+        }
+    }
+
+    File(outputName).writeText(res.joinToString(separator = ", "))
+}
+
+fun hasDifferentLetters(str: String): Boolean {
+    val letters = str.toLowerCase().toSet()
+    return (letters.size == str.length)
 }
 
 /**
@@ -309,7 +378,45 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val res = StringBuilder("<html><body>")
+    val originalText = File(inputName).readLines()
+    var paragraphBuffer = StringBuffer()
+
+    for (line in originalText) {
+        if (line == "\n" || line == "") {
+            res.append(paragraphBuffer).append("</p>")
+            paragraphBuffer = StringBuffer()
+            continue
+        }
+        if (paragraphBuffer.isEmpty()) paragraphBuffer.append("<p>")
+        var sTmp = replaceCharsToTag(line, "**", "<b>", "</b>")
+        sTmp = replaceCharsToTag(sTmp, "*", "<i>", "</i>")
+        sTmp = replaceCharsToTag(sTmp, "~~", "<s>", "</s>")
+        paragraphBuffer.append(sTmp)
+    }
+    if (paragraphBuffer.isNotBlank()) {
+        res.append(paragraphBuffer).append("</p>")
+    }
+    res.append("</body></html>")
+    File(outputName).writeText(res.toString())
+}
+
+fun replaceCharsToTag(str: String, s: String, openTag: String, closeTag: String): String {
+    var idx = 0
+    val result = StringBuilder()
+    var nowOpen = true
+    while (idx < str.length) {
+        val sliced = str.slice(idx..min(idx + s.length - 1, str.length - 1))
+        if (sliced == s) {
+            result.append(if (nowOpen) openTag else closeTag)
+            nowOpen = !nowOpen
+            idx += s.length - 1
+        } else {
+            result.append(str[idx])
+        }
+        idx++
+    }
+    return result.toString()
 }
 
 /**
@@ -412,7 +519,49 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    val inp = File(inputName).readLines()
+    val res = StringBuffer("<html><body>")
+    val olIdxRegex = "^\\s*(\\d+)\\.\\s".toRegex() // todo remember to use 1 group
+    val isUlRegex = "^\\s*[*]".toRegex()
+    val olContentRegex = "^\\s*\\d+\\.\\s(.*)".toRegex()
+    val ulContentRegex = "^\\s*\\*\\s(.+)".toRegex() // todo 1 group
+    val spacesAtStart = "^\\s*".toRegex()
+    var currentLevel = -1
+
+    val currentStack = Stack<String>()
+
+    for (line in inp) {
+        val currentSpaces = spacesAtStart.find(line)?.value?.length ?: 0
+        val tag = when {
+            isUlRegex.find(line) != null -> "ul"
+            olIdxRegex.find(line)?.groupValues != null -> "ol"
+            else -> ""
+        }
+        val content = when (tag) {
+            "ol" -> olContentRegex.find(line)!!.value
+            else -> ulContentRegex.find(line)?.groupValues?.get(1) ?: ""
+        }
+        if (currentSpaces > currentLevel) {
+            currentStack.add(tag)
+            res.append("<$tag>")
+            currentLevel = currentSpaces
+            res.append("<li>$content")
+            currentStack.add("li")
+            continue
+        } else if (currentSpaces < currentLevel) {
+            for (i in currentSpaces..currentLevel step 4)
+                res.append("</${currentStack.pop()}>")
+            currentLevel = currentSpaces
+        }
+        if (tag.isBlank()) {
+            res.append(line)
+        } else {
+            res.append("<li>$content")
+            currentStack.add("li")
+        }
+    }
+    res.append("</body></html>")
+    File(outputName).writeText(res.toString())
 }
 
 /**

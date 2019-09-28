@@ -59,6 +59,15 @@ Basic, Ruby, Swift.
 
     @Test
     @Tag("Normal")
+    fun strContainsStr() {
+        assertEquals(3, strContainsStr("eee", "e"))
+        assertEquals(2, strContainsStr("eee", "ee"))
+        assertEquals(2, strContainsStr("eeeg", "ee"))
+        assertEquals(2, strContainsStr("привет, как дела, как привет, азаза?", "привет"))
+    }
+
+    @Test
+    @Tag("Normal")
     fun countSubstrings() {
         assertEquals(
             mapOf("РАЗНЫЕ" to 2, "ные" to 2, "Неряшливость" to 1, "е" to 49, "эволюция" to 0),
@@ -113,6 +122,9 @@ Basic, Ruby, Swift.
            Во входном файле с именем inputName содержится некоторый текст.
         Вывести его в выходной файл с именем outputName, выровняв по центру."""
         )
+        File("temp.txt").delete()
+        centerFile("input/empty.txt", "temp.txt")
+        assertFileContent("temp.txt", "")
         File("temp.txt").delete()
 
     }
@@ -236,6 +248,14 @@ Basic, Ruby, Swift.
         assertEquals(expected, result)
 
         File("temp.html").delete()
+    }
+
+    @Test
+    fun replaceCharsToTag() {
+        assertEquals(
+            "привет <a>, это тест </a>, как дела<a>, а***",
+            replaceCharsToTag("привет ***, это тест ***, как дела***, а***", "***", "<a>", "</a>")
+        )
     }
 
     @Test
