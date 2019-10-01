@@ -364,10 +364,12 @@ fun findFriends(
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    // Пришлось поменять не только ту строку, так как моё решение игнорировало возможность повятение нескольких одинаковых
+    // чисел на входе
     val srtd = list.sorted()
-    val values = hashMapOf<Int, Int>()
+    val values = hashMapOf<Int, Set<Int>>()
     for (i in list.indices) {
-        values[list[i]] = i
+        values[list[i]] = values.getOrDefault(list[i], mutableSetOf()).plus(i)
     }
 
     for (i in srtd.indices) {
@@ -375,7 +377,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
         val delta = number - srtd[i]
         val idxFirst = values[srtd[i]] ?: continue
         val idxSecond = values[delta] ?: continue
-        if (idxFirst != idxSecond) return idxFirst to idxSecond
+        if (idxFirst.size > 1 || idxFirst != idxSecond) return idxFirst.first() to idxSecond.last()
     }
     return -1 to -1
 }

@@ -91,10 +91,10 @@ fun sibilants(inputName: String, outputName: String) {
     for (idx in inp.indices) {
         val toAdd = if (idx > 1 && inp[idx - 1].toLowerCase() in chars) {
             val oldLetter = inp[idx]
-            val oldPrevLetter = if (idx > 0) inp[idx - 1] else ' '
+            val oldPrevLetter = if (idx > 0) inp[idx - 1] else null
             val isUpper = oldLetter.isUpperCase()
-            val letter = when ("${oldPrevLetter.toLowerCase()}${oldLetter.toLowerCase()}") {
-                in setOf("жы", "шы") -> 'и'
+            val letter = when ("${oldPrevLetter?.toLowerCase() ?: ""}${oldLetter.toLowerCase()}") {
+                in setOf("жы", "шы", "чы") -> 'и'
                 in setOf("щю", "чю", "жю", "шю") -> 'у'
                 in setOf("чя", "жя", "шя", "щя") -> 'а'
                 else -> oldLetter
@@ -103,8 +103,7 @@ fun sibilants(inputName: String, outputName: String) {
         } else inp[idx]
         res.append(toAdd)
     }
-    val out = File(outputName)
-    out.writeText(res.toString())
+    File(outputName).writeText(res.toString())
 }
 
 /**
@@ -128,6 +127,11 @@ fun centerFile(inputName: String, outputName: String) {
     val inp = File(inputName).readLines()
     val maxLen = (inp.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
+
+    if (inp.size <= 1) {
+        File(outputName).writeText(inp.joinToString(separator = "\n"))
+        return
+    }
 
     for (line in inp) {
         val l = line.trim()
@@ -168,6 +172,11 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
     val maxLen = (lines.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
+
+    if (lines.size <= 1) {
+        File(outputName).writeText(lines.joinToString(separator = "\n"))
+        return
+    }
 
     for (lineRow in lines) {
         if (lineRow.isEmpty() || lineRow == "\n") {

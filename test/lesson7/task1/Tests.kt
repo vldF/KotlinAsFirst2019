@@ -105,6 +105,11 @@ Basic, Ruby, Swift.
  */"""
         )
         File("temp.txt").delete()
+        sibilants("input/sibilants_in2.txt", "temp.txt")
+        assertFileContent(
+            "temp.txt", "ЩАЖЖЗЖЧИЖЖ: ААЖУЗШЧ - ЯААЖТЖЧ\\nЩАЖЖЗЖЧИЖЖ:"
+        )
+        File("temp.txt").delete()
     }
 
     @Test
@@ -132,6 +137,13 @@ Basic, Ruby, Swift.
     @Test
     @Tag("Hard")
     fun alignFileByWidth() {
+        alignFileByWidth("input/width_in2.txt", "input/temp.txt")
+        assertFileContent(
+            "input/temp.txt",
+            "БА --"
+        )
+        File("temp.txt").delete()
+
         alignFileByWidth("input/width_in1.txt", "input/temp.txt")
         assertFileContent(
             "input/temp.txt",
@@ -209,14 +221,6 @@ Basic, Ruby, Swift.
             "temp.txt"
         )
         assertFileContent("temp.txt", "Zzdrавствуy,\nmyyr!!!")
-        File("temp.txt").delete()
-
-        transliterate(
-            "input/trans_in2.txt",
-            mapOf(' ' to "a"),
-            "temp.txt"
-        )
-        assertFileContent("temp.txt", "a")
         File("temp.txt").delete()
 
         transliterate(
@@ -359,6 +363,12 @@ Basic, Ruby, Swift.
             assertFileContent("temp.txt", res.trimIndent())
             File("temp.txt").delete()
         }
+
+        test(
+            26379,
+            38648,
+            "      26379\n*     38648\n-----------\n     211032\n+   105516\n+  158274\n+ 211032\n+ 79137\n-----------\n 1019495592"
+        )
 
         test(
             19935,
