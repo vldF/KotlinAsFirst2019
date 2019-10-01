@@ -128,8 +128,8 @@ Basic, Ruby, Swift.
         Вывести его в выходной файл с именем outputName, выровняв по центру."""
         )
         File("temp.txt").delete()
-        centerFile("input/empty.txt", "temp.txt")
-        assertFileContent("temp.txt", "")
+        centerFile("input/center_in2.txt", "temp.txt")
+        assertFileContent("temp.txt", "аааабаб")
         File("temp.txt").delete()
 
     }
@@ -140,7 +140,7 @@ Basic, Ruby, Swift.
         alignFileByWidth("input/width_in2.txt", "input/temp.txt")
         assertFileContent(
             "input/temp.txt",
-            "БА --"
+            "аааба\nАААБА --"
         )
         File("temp.txt").delete()
 

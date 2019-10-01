@@ -91,12 +91,11 @@ fun sibilants(inputName: String, outputName: String) {
     for (idx in inp.indices) {
         val toAdd = if (idx > 1 && inp[idx - 1].toLowerCase() in chars) {
             val oldLetter = inp[idx]
-            val oldPrevLetter = if (idx > 0) inp[idx - 1] else null
             val isUpper = oldLetter.isUpperCase()
-            val letter = when ("${oldPrevLetter?.toLowerCase() ?: ""}${oldLetter.toLowerCase()}") {
-                in setOf("жы", "шы", "чы") -> 'и'
-                in setOf("щю", "чю", "жю", "шю") -> 'у'
-                in setOf("чя", "жя", "шя", "щя") -> 'а'
+            val letter = when (oldLetter.toLowerCase()) {
+                'ы' -> 'и'
+                'ю' -> 'у'
+                'я' -> 'а'
                 else -> oldLetter
             }
             if (isUpper) letter.toUpperCase() else letter
@@ -127,11 +126,6 @@ fun centerFile(inputName: String, outputName: String) {
     val inp = File(inputName).readLines()
     val maxLen = (inp.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
-
-    if (inp.size <= 1) {
-        File(outputName).writeText(inp.joinToString(separator = "\n"))
-        return
-    }
 
     for (line in inp) {
         val l = line.trim()
@@ -173,11 +167,6 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     val maxLen = (lines.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
 
-    if (lines.size <= 1) {
-        File(outputName).writeText(lines.joinToString(separator = "\n"))
-        return
-    }
-
     for (lineRow in lines) {
         if (lineRow.isEmpty() || lineRow == "\n") {
             resText.append("\n")
@@ -191,7 +180,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             continue
         }
 
-        val charsDelta = maxLen - line.length - 2
+        val charsDelta = max(0, maxLen - line.length - 2)
         val toOneSpace = charsDelta / (splittedWords.size - 1)  // -1 за то, что пробелов между n словами n-1
         var modSpaces = charsDelta % (splittedWords.size - 1)
 
