@@ -212,6 +212,14 @@ Basic, Ruby, Swift.
         File("temp.txt").delete()
 
         transliterate(
+            "input/trans_in2.txt",
+            mapOf(' ' to "a"),
+            "temp.txt"
+        )
+        assertFileContent("temp.txt", "a")
+        File("temp.txt").delete()
+
+        transliterate(
             "input/trans_in1.txt",
             mapOf('з' to "zZ", 'р' to "r", 'д' to "d", 'й' to "y", 'М' to "m", 'и' to "YY", '!' to "!!!"),
             "temp.txt"
@@ -365,6 +373,12 @@ Basic, Ruby, Swift.
              --------
               2212785
              """
+        )
+
+        test(
+            2,
+            82,
+            "   2\n* 82\n----\n   4\n+16\n----\n 164"
         )
 
         test(

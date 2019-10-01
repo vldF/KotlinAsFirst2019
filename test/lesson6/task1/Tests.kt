@@ -144,7 +144,7 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
-        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(1, "<", 500) }
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "<", 500) }
         assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(10, "+>+>[+>", 3) }
         assertThrows(IllegalArgumentException::class.java) {
             computeDeviceCells(

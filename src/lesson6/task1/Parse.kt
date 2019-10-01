@@ -26,7 +26,7 @@ val months = listOf(
  */
 fun isNumber(str: String): Boolean {
     for (c in str) if (!c.isDigit()) return false
-    return true
+    return str.isNotEmpty()
 }
 
 /**
@@ -447,6 +447,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         clock++
         commandsSteps++
     }
-    require(pos in 0 until cells)
+    check(pos in 0 until cells)
     return line
 }

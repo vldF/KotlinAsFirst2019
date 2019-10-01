@@ -5,8 +5,10 @@ package lesson7.task1
 import lesson3.task1.digitNumber
 import lesson3.task1.revert
 import java.io.File
+import java.lang.Integer.max
 import java.lang.Integer.min
 import kotlin.math.pow
+import kotlin.math.sign
 
 /**
  * Пример
@@ -87,20 +89,18 @@ fun sibilants(inputName: String, outputName: String) {
     val chars = setOf('ж', 'ч', 'ш', 'щ')
 
     for (idx in inp.indices) {
-        var toAdd: Char
-        toAdd = if (idx > 1 && inp[idx - 1].toLowerCase() in chars) {
+        val toAdd = if (idx > 1 && inp[idx - 1].toLowerCase() in chars) {
             val oldLetter = inp[idx]
+            val oldPrevLetter = if (idx > 0) inp[idx - 1] else ' '
             val isUpper = oldLetter.isUpperCase()
-            val letter = when (oldLetter.toLowerCase()) {
-                'ы' -> 'и'
-                'я' -> 'а'
-                'ю' -> 'у'
+            val letter = when ("${oldPrevLetter.toLowerCase()}${oldLetter.toLowerCase()}") {
+                in setOf("жы", "шы") -> 'и'
+                in setOf("щю", "чю", "жю", "шю") -> 'у'
+                in setOf("чя", "жя", "шя", "щя") -> 'а'
                 else -> oldLetter
             }
             if (isUpper) letter.toUpperCase() else letter
-
         } else inp[idx]
-
         res.append(toAdd)
     }
     val out = File(outputName)
@@ -218,7 +218,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  */
 fun top20Words(inputName: String): Map<String, Int> {
     val inp = File(inputName).readText().toLowerCase()
-    if (inp.isEmpty()) return mapOf<String, Int>()
+    if (inp.isEmpty()) return mapOf()
     val words = Regex("[а-яa-zё]*[^,.\\s!?_\\-\\d]").findAll(inp).map { it.value }
     val untopped = mutableMapOf<String, Int>()
 
@@ -231,7 +231,7 @@ fun top20Words(inputName: String): Map<String, Int> {
         if (res.size == 20) break
 
     }
-    return mapOf<String, Int>()
+    return mapOf()
 }
 
 /**
@@ -273,13 +273,11 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     val text = File(inputName).readText()
     val res = StringBuilder()
     for (c in text) {
-        if (c == ' ' || c == '\n') res.append(c)
-        else {
-            val r = dictionary.getOrDefault(c.toLowerCase(), dictionary.getOrDefault(c.toUpperCase(), c.toString()))
-                .toLowerCase()
-            if (c.isUpperCase()) res.append(r.capitalize())
-            else res.append(r)
-        }
+        val r = dictionary.getOrDefault(c.toLowerCase(), dictionary.getOrDefault(c.toUpperCase(), c.toString()))
+            .toLowerCase()
+        if (c.isUpperCase()) res.append(r.capitalize())
+        else res.append(r)
+
     }
     File(outputName).writeText(res.toString())
 }
@@ -528,7 +526,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     val ulContentRegex = "^\\s*\\*\\s(.+)".toRegex() // todo 1 group
     val res = Node("html", StringBuilder())
     res.insertedTags.add(Node("body", StringBuilder()))
-    var currentSpacesLvl = -1
 
     for (lineIdx in inp.indices) {
         val line = inp[lineIdx]
@@ -580,23 +577,23 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-   19935
-*    111
+19935
+ *    111
 --------
-   19935
+19935
 + 19935
 +19935
 --------
- 2212785
+2212785
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  * Нули в множителе обрабатывать так же, как и остальные цифры:
-  235
-*  10
+235
+ *  10
 -----
-    0
+0
 +235
 -----
- 2350
+2350
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
@@ -614,9 +611,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     res.add(" $ans")
     res.add("-".repeat(maxLen))
     var first = false
+    var nextLen = 1 + digitNumber(nums.last())
+
     for ((spaces, num) in nums.reversed().withIndex()) {
         if (spaces == nums.size - 1) first = true
-        res.add((if (!first) "+" else "") + " ".repeat(spaces + if(first) 1 else 0) + "$num")
+        if (first) {
+            res.add(" ".repeat(nextLen - digitNumber(num)) + "$num")
+        } else {
+            res.add("+" + " ".repeat(nextLen - digitNumber(num) - 1) + "$num")
+        }
+        nextLen++
     }
     res.add("-".repeat(maxLen))
     res.add("*" + " ".repeat(maxLen - digitNumber(rhv) - 1) + "$rhv")
@@ -631,37 +635,20 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Вывести в выходной файл процесс деления столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 22):
-  19935 | 22
- -198     906
- ----
-    13
-    -0
-    --
-    135
-   -132
-   ----
-      3
+19935 | 22
+-198     906
+----
+13
+-0
+--
+135
+-132
+----
+3
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    // Не доделал
-    val res = mutableListOf<String>()
-    val ans = lhv / rhv
-    val mod = lhv % rhv
-    val firstLen = digitNumber(lhv)
-
-    res.add(" $lhv / $rhv")
-    var reversedRhv = revert(rhv)
-    var firstDigits = lhv / 10.0.pow(firstLen - digitNumber((reversedRhv % 10) * rhv))
-    var first = true
-    val delta = 0
-    while (reversedRhv > 0) {
-        val mul = reversedRhv % 10
-        reversedRhv /= 10
-        val k = firstDigits - mul * rhv
-        res.add("-$k")
-        res.add("-".repeat("-$k".length))
-    }
+    TODO()
 }
 

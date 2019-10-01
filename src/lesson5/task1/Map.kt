@@ -366,7 +366,9 @@ fun findFriends(
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val srtd = list.sorted()
     val values = hashMapOf<Int, Int>()
-    (list.indices).map { values[list[it]] = it }
+    for (i in list.indices) {
+        values[list[i]] = i
+    }
 
     for (i in srtd.indices) {
         if (srtd[i] > number * 1.0 / 2) return -1 to -1
