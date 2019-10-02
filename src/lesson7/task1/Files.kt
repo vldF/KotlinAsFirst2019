@@ -121,13 +121,16 @@ fun sibilants(inputName: String, outputName: String) {
  */
 fun centerFile(inputName: String, outputName: String) {
     val inp = File(inputName).readLines()
-    val maxLen = (inp.maxBy { it.trim().length } ?: "").length
+    val lines = mutableListOf<String>()
+    for (line in inp) {
+        lines.add(line.trim())
+    }
+    val maxLen = (lines.maxBy { it.trim().length } ?: "").length
     val resText = StringBuilder()
 
-    for (line in inp) {
-        val l = line.trim()
-        val spacesToAdd = (maxLen - l.length) / 2
-        resText.append(" ".repeat(spacesToAdd)).append(l).append('\n')
+    for (line in lines) {
+        val spacesToAdd = (maxLen - line.length) / 2
+        resText.append(" ".repeat(spacesToAdd)).append(line).append('\n')
     }
     File(outputName).writeText(resText.toString())
 }
@@ -160,7 +163,12 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    val lines = File(inputName).readLines()
+    val tmpLines = File(inputName).readLines()
+    val lines = mutableListOf<String>()
+    for (l in tmpLines) {
+        lines.add(l.trim().replace(Regex("\\s+"), " "))
+    }
+
     val maxLen = (lines.maxBy { it.length } ?: "").length
     val resText = StringBuilder()
 
@@ -169,15 +177,14 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             resText.append("\n")
             continue
         }
-        val line = lineRow.trim().replace(Regex("\\s+"), " ")
-        val splittedWords = line.split(" ")
+        val splittedWords = lineRow.split(" ")
 
         if (splittedWords.size == 1) {
             resText.append(splittedWords[0]).append("\n")
             continue
         }
 
-        val charsDelta = max(0, maxLen - line.length - if (splittedWords.size == 2) 0 else 2)
+        val charsDelta = max(0, maxLen - lineRow.length)
         val toOneSpace = charsDelta / (splittedWords.size - 1)  // -1 за то, что пробелов между n словами n-1
         var modSpaces = charsDelta % (splittedWords.size - 1)
 
