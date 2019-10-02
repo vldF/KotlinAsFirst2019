@@ -3,12 +3,9 @@
 package lesson7.task1
 
 import lesson3.task1.digitNumber
-import lesson3.task1.revert
 import java.io.File
 import java.lang.Integer.max
 import java.lang.Integer.min
-import kotlin.math.pow
-import kotlin.math.sign
 
 /**
  * Пример
@@ -89,7 +86,7 @@ fun sibilants(inputName: String, outputName: String) {
     val chars = setOf('ж', 'ч', 'ш', 'щ')
 
     for (idx in inp.indices) {
-        val toAdd = if (idx > 1 && inp[idx - 1].toLowerCase() in chars) {
+        val toAdd = if (idx > 0 && inp[idx - 1].toLowerCase() in chars) {
             val oldLetter = inp[idx]
             val isUpper = oldLetter.isUpperCase()
             val letter = when (oldLetter.toLowerCase()) {
@@ -124,7 +121,7 @@ fun sibilants(inputName: String, outputName: String) {
  */
 fun centerFile(inputName: String, outputName: String) {
     val inp = File(inputName).readLines()
-    val maxLen = (inp.maxBy { it.length } ?: "").length
+    val maxLen = (inp.maxBy { it.trim().length } ?: "").length
     val resText = StringBuilder()
 
     for (line in inp) {
@@ -180,7 +177,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             continue
         }
 
-        val charsDelta = max(0, maxLen - line.length - 2)
+        val charsDelta = max(0, maxLen - line.length - if (splittedWords.size == 2) 0 else 2)
         val toOneSpace = charsDelta / (splittedWords.size - 1)  // -1 за то, что пробелов между n словами n-1
         var modSpaces = charsDelta % (splittedWords.size - 1)
 
@@ -217,19 +214,23 @@ fun alignFileByWidth(inputName: String, outputName: String) {
 fun top20Words(inputName: String): Map<String, Int> {
     val inp = File(inputName).readText().toLowerCase()
     if (inp.isEmpty()) return mapOf()
-    val words = Regex("[а-яa-zё]*[^,.\\s!?_\\-\\d]").findAll(inp).map { it.value }
+    val words = Regex("([а-яa-zё]+)[^]а-яa-zё]").findAll(inp)
     val untopped = mutableMapOf<String, Int>()
 
     for (word in words) {
-        untopped[word] = untopped.getOrDefault(word, 0) + 1
+        if (word.groupValues.size != 2) continue
+        val w = word.groupValues[1]
+        untopped[w] = untopped.getOrDefault(w, 0) + 1
     }
-    val top = untopped.toSortedMap(compareBy<String> { untopped[it] }.thenBy { it })
+    val top = untopped.toSortedMap(compareBy<String> { untopped[it] }.thenBy { it }.reversed())
     val res = mutableMapOf<String, Int>()
+    val badValue = if (top.size > 20) top.values.elementAt(20) else -1
     for (key in top.keys) {
-        if (res.size == 20) break
-
+        val toAdd = top.getValue(key)
+        if (toAdd == badValue || res.size == 20) break
+        res[key] = toAdd
     }
-    return mapOf()
+    return res
 }
 
 /**

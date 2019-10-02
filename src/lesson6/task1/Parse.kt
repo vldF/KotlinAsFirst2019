@@ -165,8 +165,8 @@ fun flattenPhoneNumber(phone: String): String {
         if (isParentheses && c.isDigit()) validParentheses = true
         if (!validChars.contains(c) && !c.isDigit()) return ""
     }
-
-    return if (isParentheses) "" else res.toString()
+    val strRes = res.toString()
+    return if (isParentheses || strRes == "+") "" else strRes
 }
 
 /**

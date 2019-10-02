@@ -86,6 +86,11 @@ Basic, Ruby, Swift.
     @Test
     @Tag("Normal")
     fun sibilants() {
+        sibilants("input/sibilants_in2.txt", "temp.txt")
+        assertFileContent(
+            "temp.txt", "ЖА --- "
+        )
+        File("temp.txt").delete()
         sibilants("input/sibilants_in1.txt", "temp.txt")
         assertFileContent(
             "temp.txt",
@@ -105,16 +110,15 @@ Basic, Ruby, Swift.
  */"""
         )
         File("temp.txt").delete()
-        sibilants("input/sibilants_in2.txt", "temp.txt")
-        assertFileContent(
-            "temp.txt", "ЩАЖЖЗЖЧИЖЖ: ААЖУЗШЧ - ЯААЖТЖЧ\\nЩАЖЖЗЖЧИЖЖ:"
-        )
-        File("temp.txt").delete()
     }
 
     @Test
     @Tag("Normal")
     fun centerFile() {
+        centerFile("input/center_in2.txt", "temp.txt")
+        assertFileContent("temp.txt", "ааиабяб")
+        File("temp.txt").delete()
+
         centerFile("input/center_in1.txt", "temp.txt")
         assertFileContent(
             "temp.txt",
@@ -128,10 +132,6 @@ Basic, Ruby, Swift.
         Вывести его в выходной файл с именем outputName, выровняв по центру."""
         )
         File("temp.txt").delete()
-        centerFile("input/center_in2.txt", "temp.txt")
-        assertFileContent("temp.txt", "аааабаб")
-        File("temp.txt").delete()
-
     }
 
     @Test
@@ -140,7 +140,7 @@ Basic, Ruby, Swift.
         alignFileByWidth("input/width_in2.txt", "input/temp.txt")
         assertFileContent(
             "input/temp.txt",
-            "аааба\nАААБА --"
+            "БВВА бббаббав\nбббаббав    -"
         )
         File("temp.txt").delete()
 
@@ -244,19 +244,7 @@ Basic, Ruby, Swift.
     private fun checkHtmlSimpleExample() {
         val result = File("temp.html").readText().replace(Regex("[\\s\\n\\t]"), "")
         val expected =
-            """
-                    <html>
-                        <body>
-                            <p>
-                                Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-                                Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-                            </p>
-                            <p>
-                                Suspendisse <s>et elit in enim tempus iaculis</s>.
-                            </p>
-                        </body>
-                    </html>
-                    """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
+            "<html><body><p>dV?a<i>X@1x@}NW<>N,6Eo[t(-r`sZ6j(#Fg.#.Z`p&^j9;k,X.M8sb)GGWa:F|klhLJzoIwh}T=./CS(S/(2wd1wb:JH7Z36(U:Ww1^j,c?C'dco</i><]@@,[d'dq<b>or1lHq(%X`=4<s>lGH4Qb</s>~?hOamT</b>5i;Pu<b>fp\\tFA0Y}8iEkdLwK</b>\"pCq\"?zCm;\"`z}gB2aN4<i>4{xIEDMx&xW2=zsaO4#b7-]3pDTn'FDd`Sbw4Y'P6ENeQtPtU<b>Lrt9YV(alo:=kUHF@8T-fqmk@dceD!n;M<y[</b></i><b>QHW^MQd\"5F</b>Bd).(eT*Zb\\|=yD-FNud4</p><p>-{<s>_/c</s>p\">`Au`19|P\\/</p><p>0h&<W.~<a,^R:/\"\"@NWI9-1tasDNpH4csR!s18IXL[&?j'x4'7KlG0#L`hU=#W|iYx{9(s|kD[uujwG{M#s</p></body></html>".trimIndent().replace(Regex("[\\s\\n\\t]"), "")
         assertEquals(expected, result)
 
         File("temp.html").delete()
