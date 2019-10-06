@@ -92,7 +92,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) - radius <= 0.2
+    fun contains(p: Point): Boolean = center.distance(p) - radius <= 0.05
 }
 
 /**
@@ -119,7 +119,7 @@ fun diameter(vararg pts: Point): Segment {
     // Алгоритм Джарвиса. Он обращается ко всем на "Сер"
     require(pts.isNotEmpty())
 
-    val points = pts.toMutableList()
+    val points = pts.toSet().toMutableList()
 
     // Найдём стартовую точку
     // Не просто ищем, а переставляем ее в самое начало списка
@@ -209,7 +209,7 @@ fun circleByDiameter(diameter: Segment): Circle = Circle(diameter.middle(), diam
  * или: y * cos(angle) = x * sin(angle) + b, где b = point.y * cos(angle) - point.x * sin(angle).
  * Угол наклона обязан находиться в диапазоне от 0 (включительно) до PI (исключительно).
  */
-class Line private constructor(val b: Double, val angle: Double) {
+class Line constructor(val b: Double, val angle: Double) {
     init {
         require(angle >= 0 && angle < PI) { "Incorrect line angle: $angle" }
     }
@@ -267,7 +267,7 @@ fun lineByPoints(a: Point, b: Point): Line {
     return if (k >= 0) {
         Line(a, atan(k) % PI)
     } else {
-        Line(a, PI - atan(-k))
+        Line(a, (PI - atan(-k)) % PI)
     }
 }
 

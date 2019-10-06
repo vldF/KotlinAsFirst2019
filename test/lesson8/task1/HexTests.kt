@@ -17,6 +17,7 @@ class HexTests {
     @Test
     @Tag("Normal")
     fun hexagonDistance() {
+        assertEquals(2079, Hexagon(HexPoint(-558, -558), 136).distance(Hexagon(HexPoint(951, 632), 484)))
         assertEquals(2, Hexagon(HexPoint(1, 3), 1).distance(Hexagon(HexPoint(6, 2), 2)))
     }
 
@@ -104,6 +105,9 @@ class HexTests {
     @Test
     @Tag("Hard")
     fun pathBetweenHexes() {
+        assertEquals(
+            1, pathBetweenHexes(HexPoint(y = -1000, x = -558), HexPoint(y = -1000, x = -558)).size
+        )
         assertEquals(
             listOf(
                 HexPoint(y = 2, x = 2),

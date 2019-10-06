@@ -69,20 +69,8 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int {
-        var minDist = Int.MAX_VALUE
-        for (i in 0..5) {
-            val pFirst = this.getAnglePoint(i)
-            for (j in 0..5) {
-                val pSecond = other.getAnglePoint(j)
-                val d = pFirst.distance(pSecond)
-                if (d <= minDist) {
-                    minDist = d
-                }
-            }
-        }
-        return minDist
-    }
+    fun distance(other: Hexagon): Int = center.distance(other.center) - radius - other.radius
+
 
     /**
      * Тривиальная
@@ -265,6 +253,7 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = when (directi
  */
 fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
     val dist = from.distance(to)
+    if (dist == 0) return listOf(from)
     val res = mutableListOf<HexPoint>()
 
     for (i in 0..dist) {
@@ -378,11 +367,19 @@ fun findMultipyHexPoints(vararg centers: HexPoint, Radius: Int): Set<HexPoint> {
         val hexSet = Hexagon(center, Radius).getRing()
         unions.add(hexSet)
     }
-    var allHexPoints = unions.first()
+    val allHexPoints = mutableListOf<HexPoint>()
+    val res = mutableSetOf<HexPoint>()
     for (hexSet in unions) {
-        allHexPoints = allHexPoints.union(hexSet)
+        allHexPoints.addAll(hexSet)
     }
-    return allHexPoints
+    for (hexSet in unions) {
+        for (point in hexSet) {
+            if (allHexPoints.count{ it == point } > 1) {
+                res.add(point)
+            }
+        }
+    }
+    return res
 
 }
 
