@@ -95,6 +95,7 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
     }
 
     fun getRing(): Set<HexPoint> {
+        if (radius == 0) return setOf(center)
         val res = mutableSetOf<HexPoint>()
         var currentPoint = center.move(Direction.DOWN_LEFT, radius)
         for (direction in Direction.values()) {
@@ -319,19 +320,21 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         val d1 = a.distance(b)
         val d2 = b.distance(c)
         val d3 = c.distance(a)
-        return when (maxOf(d1, d2, d3)) {
-            d1 -> findIntersect(a, b, maxRadius = d1)
-            d2 -> findIntersect(b, c, maxRadius = d2)
-            else -> findIntersect(c, a, maxRadius = d3)
-        }
+        return findIntersect(a, b, c, maxRadius = maxOf(d1, d2, d3) + 1, minRadius = maxOf(d1, d2, d3), count = 2)
     }
 
     val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    return findIntersect(a, b, c, maxRadius = maxRadius)
+    return findIntersect(a, b, c, maxRadius = maxRadius, count = 1)
 }
 
-fun findIntersect(vararg centers: HexPoint, maxRadius: Int): Hexagon? {
-    for (r in 1..maxRadius) {
+/**
+ * Поиск таких точек (size=count), что расстояние от этих точек до всех точек из centers равно
+ *
+ * В теории, можно попробовать решить аналитически систему из трёх уравнений с модулем, но это нереально сложно
+ * и код будет еще больше, чем тут
+ */
+fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0, count: Int): Hexagon? {
+    for (r in minRadius..maxRadius) {
         val unions = mutableListOf<Set<HexPoint>>()
         for (center in centers) {
             val hexSet = Hexagon(center, r).getRing()
@@ -341,8 +344,8 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int): Hexagon? {
         for (hexSet in unions) {
             intersect = intersect.intersect(hexSet)
         }
-        if (centers.size == 3 && intersect.size == 1 || centers.size == 2 && intersect.size == 2)
-            return Hexagon(intersect.first(), intersect.first().distance(centers.first()))
+        if (intersect.size == count)
+            return Hexagon(intersect.first(), max(1, intersect.first().distance(centers.first())))
     }
     return null
 }
@@ -357,7 +360,31 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int): Hexagon? {
  *
  * Пример: 13, 32, 45, 18 -- шестиугольник радиусом 3 (с центром, например, в 15)
  */
-fun minContainingHexagon(vararg points: HexPoint): Hexagon = TODO()
+fun minContainingHexagon(vararg points: HexPoint): Hexagon {
+    var currentRadius = 0
+    while (true) {
+        val unionPoints = findMultipyHexPoints(*points, Radius = currentRadius)
+        for (p in unionPoints) {
+            val hexagon = Hexagon(p, currentRadius)
+            if (points.all { hexagon.contains(it) }) return hexagon
+        }
+        currentRadius++
+    }
+}
+
+fun findMultipyHexPoints(vararg centers: HexPoint, Radius: Int): Set<HexPoint> {
+    val unions = mutableListOf<Set<HexPoint>>()
+    for (center in centers) {
+        val hexSet = Hexagon(center, Radius).getRing()
+        unions.add(hexSet)
+    }
+    var allHexPoints = unions.first()
+    for (hexSet in unions) {
+        allHexPoints = allHexPoints.union(hexSet)
+    }
+    return allHexPoints
+
+}
 
 
 
