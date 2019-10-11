@@ -287,7 +287,7 @@ fun mostExpensive(description: String): String {
             maxName = name
         }
     }
-    return if (maxName.isNotEmpty()) maxName else ""
+    return maxName
 }
 
 fun maxCharsInRepite(str: String): Int {

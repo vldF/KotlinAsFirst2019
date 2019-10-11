@@ -91,8 +91,9 @@ data class Circle(val center: Point, val radius: Double) {
      * Тривиальная
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
+     * И всё таки, модуль тут не нужен
      */
-    fun contains(p: Point): Boolean = center.distance(p) - radius <= 0.05
+    fun contains(p: Point): Boolean = center.distance(p) - radius <= 1e-5
 }
 
 /**
@@ -125,7 +126,7 @@ fun diameter(vararg pts: Point): Segment {
     // Не просто ищем, а переставляем ее в самое начало списка
     // Это нужно для успешного выхода из цикла ниже
     for (pIdx in points.indices) {
-        if (points[pIdx].x < points[0].x) {
+        if (points[pIdx].x <= points[0].x && points[pIdx].y < points[0].y || points[pIdx].x < points[0].x) {
             points[0] = points[pIdx].also { points[pIdx] = points[0] }
         }
     }
@@ -135,7 +136,7 @@ fun diameter(vararg pts: Point): Segment {
     var minSin = 2.0
     var secondPoint = Point(-1.0, -1.0)
     for (p in points.slice((1 until points.size))) {
-        val dist = sqrt((p.x - startPoint.x).pow(2.0) + (p.y - startPoint.y).pow(2.0))
+        val dist = p.distance(startPoint)
         val currentSin = p.y / dist
         if (currentSin < minSin) {
             minSin = currentSin
@@ -229,13 +230,8 @@ class Line constructor(val b: Double, val angle: Double) {
 
     private fun calcX(beta: Double, b2: Double) = (cos(angle) * b2 - b * cos(beta)) / sin(angle - beta)
 
-    private fun calcY(x: Double, beta: Double, b2: Double): Double {
-        return if (angle == Math.PI / 2) {
-            (x * sin(beta) + b2) / cos(beta)
-        } else {
-            (x * sin(angle) + b) / cos(angle)
-        }
-    }
+    private fun calcY(x: Double, beta: Double, b2: Double): Double =
+        if (angle == Math.PI / 2) (x * sin(beta) + b2) / cos(beta) else (x * sin(angle) + b) / cos(angle)
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
 

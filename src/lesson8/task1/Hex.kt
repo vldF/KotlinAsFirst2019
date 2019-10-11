@@ -55,9 +55,6 @@ class Cube(val x: Double, val y: Double, val z: Double) {
  * Например, шестиугольник с центром в 33 и радиусом 1 состоит из гексов 42, 43, 34, 24, 23, 32.
  */
 data class Hexagon(val center: HexPoint, val radius: Int) {
-    private fun getAnglePoint(n: Int) =
-        HexPoint((center.x + radius * cos(n * PI / 3)).roundToInt(), (center.y + radius * sin(n * PI / 3)).roundToInt())
-
     /**
      * Средняя
      *
@@ -69,18 +66,14 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = center.distance(other.center) - radius - other.radius
-
+    fun distance(other: Hexagon): Int = max(0, center.distance(other.center) - radius - other.radius)
 
     /**
      * Тривиальная
      *
      * Вернуть true, если заданная точка находится внутри или на границе шестиугольника
      */
-    fun contains(point: HexPoint): Boolean {
-        if (point.distance(center) <= radius) return true
-        return false
-    }
+    fun contains(point: HexPoint): Boolean = (point.distance(center) <= radius)
 
     fun getRing(): Set<HexPoint> {
         if (radius == 0) return setOf(center)
@@ -374,7 +367,7 @@ fun findMultipyHexPoints(vararg centers: HexPoint, Radius: Int): Set<HexPoint> {
     }
     for (hexSet in unions) {
         for (point in hexSet) {
-            if (allHexPoints.count{ it == point } > 1) {
+            if (allHexPoints.count { it == point } > 1) {
                 res.add(point)
             }
         }
