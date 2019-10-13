@@ -149,7 +149,7 @@ class Tests {
         assertEquals(Segment(p2, p4), diameter(p1, p2, p4))
         assertEquals(Segment(p1, p4), diameter(p1, p4))
         assertEquals(
-            894.8639955306375, diameter(
+            895.0210424165128, diameter(
                 Point(2.220446049250313e-16, 0.40859240176324674),
                 Point(0.2276525073004041, -632.0),
                 Point(0.0, -632.0),

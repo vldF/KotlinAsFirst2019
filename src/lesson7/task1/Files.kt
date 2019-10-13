@@ -613,25 +613,28 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         n /= 10
     }
 
-    val maxLen = digitNumber(nums.last()) + nums.size
-    res.add(" $ans")
+    val maxLen = digitNumber(ans) + 1
+    res.add(" ".repeat(maxLen - digitNumber(lhv)) + "$lhv")
+    res.add("*" + " ".repeat(maxLen - digitNumber(rhv) - 1) + "$rhv")
     res.add("-".repeat(maxLen))
-    var first = false
-    var nextLen = 1 + digitNumber(nums.last())
 
-    for ((spaces, num) in nums.reversed().withIndex()) {
-        if (spaces == nums.size - 1) first = true
-        if (first) {
-            res.add(" ".repeat(nextLen - digitNumber(num)) + "$num")
-        } else {
-            res.add("+" + " ".repeat(nextLen - digitNumber(num) - 1) + "$num")
+    var first = true
+    var offset = 1
+
+    for (num in nums) {
+        val toAdd = StringBuilder()
+        if (!first) toAdd.append("+").append(" ".repeat(maxLen - offset - digitNumber(num)))
+        else {
+            toAdd.append(" ".repeat(maxLen - offset + 1 - digitNumber(num)))
+            first = false
         }
-        nextLen++
+        offset++
+        toAdd.append("$num")
+        res.add(toAdd.toString())
     }
     res.add("-".repeat(maxLen))
-    res.add("*" + " ".repeat(maxLen - digitNumber(rhv) - 1) + "$rhv")
-    res.add(" ".repeat(maxLen - digitNumber(lhv)) + "$lhv")
-    File(outputName).writeText(res.reversed().joinToString(separator = "\n"))
+    res.add(" $ans")
+    File(outputName).writeText(res.joinToString(separator = "\n"))
 }
 
 

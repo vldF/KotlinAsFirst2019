@@ -126,20 +126,20 @@ fun diameter(vararg pts: Point): Segment {
     // Не просто ищем, а переставляем ее в самое начало списка
     // Это нужно для успешного выхода из цикла ниже
     for (pIdx in points.indices) {
-        if (points[pIdx].x <= points[0].x && points[pIdx].y < points[0].y || points[pIdx].x < points[0].x) {
+        if (points[pIdx].x <= points[0].x && points[pIdx].y <= points[0].y || points[pIdx].x < points[0].x) {
             points[0] = points[pIdx].also { points[pIdx] = points[0] }
         }
     }
     val startPoint = points[0]
 
     val listBorderPoints = mutableListOf(startPoint)
-    var minSin = 2.0
+    var maxCos = -2.0
     var secondPoint = Point(-1.0, -1.0)
     for (p in points.slice((1 until points.size))) {
         val dist = p.distance(startPoint)
-        val currentSin = p.y / dist
-        if (currentSin < minSin) {
-            minSin = currentSin
+        val currentCos = abs(p.x - startPoint.x) / dist
+        if (currentCos > maxCos) {
+            maxCos = currentCos
             secondPoint = p
         }
     }
@@ -149,12 +149,12 @@ fun diameter(vararg pts: Point): Segment {
     var pairOfFarthestPoints = Point(-1.0, -1.0) to Point(-1.0, -1.0)
     while (startPoint != lastPoint) {
         secondPoint = lastPoint
-        var maxCos = -2.0
+        var cos = -2.0
         var nextPoint = Point(-1.0, -1.0)
         for (p in points) {
             val currentCos = cosLines(listBorderPoints[listBorderPoints.size - 2], secondPoint, p)
-            if (currentCos > maxCos) {
-                maxCos = currentCos
+            if (currentCos > cos) {
+                cos = currentCos
                 nextPoint = p
             }
         }
