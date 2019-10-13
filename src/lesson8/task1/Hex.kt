@@ -250,7 +250,7 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
     val res = mutableListOf<HexPoint>()
 
     for (i in 0..dist) {
-        res.add(cubeRound(cubeLerp(from.axialToCube(), to.axialToCube(), 1.0 / dist * i)).cubeToAxial())
+        res.add(cubeRound(cubeLerp(from.axialToCube(), to.axialToCube(), 1.0 * i / dist)).cubeToAxial())
     }
 
     return res
@@ -296,17 +296,14 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
+    val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
     if (HexSegment(a, b).direction().isParallel(HexSegment(b, c).direction())) {
         // Точки на одной прямой, ответ -- шестиугольник с радиусом, равному наибольшему расстоянию между точками
         // И центром на пересечении колец вокруг "крайних" точек
-        val d1 = a.distance(b)
-        val d2 = b.distance(c)
-        val d3 = c.distance(a)
-        return findIntersect(a, b, c, maxRadius = maxOf(d1, d2, d3) + 1, minRadius = maxOf(d1, d2, d3), count = 2)
+        return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = maxRadius, count = 2)
     }
 
-    val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    return findIntersect(a, b, c, maxRadius = maxRadius, count = 1)
+    return findIntersect(a, b, c, maxRadius = maxRadius, count = 1, minRadius = maxRadius / 2)
 }
 
 /**
