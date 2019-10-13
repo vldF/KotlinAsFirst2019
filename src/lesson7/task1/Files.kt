@@ -524,7 +524,7 @@ fun replaceCharsToTag(str: String, s: String, openTag: String, closeTag: String)
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    // Не доделал и нт идей, как доделать
+    // Не доделал и нет идей, как доделать
     val inp = File(inputName).readLines()
     val olIdxRegex = "^\\s*(\\d+)\\.\\s".toRegex() // todo remember to use 1 group
     val isUlRegex = "^\\s*[*]".toRegex()

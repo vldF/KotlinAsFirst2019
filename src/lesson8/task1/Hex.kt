@@ -103,9 +103,11 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * А, например, 13-26 не является "правильным" отрезком.
      */
     fun isValid(): Boolean {
-        if (begin.x == end.x || begin.y == end.y) return true
-        if (begin.y == end.y) return true
-        if (end.x - begin.x == begin.y - end.y) return true
+        if (begin.x == end.x || begin.y == end.y) {
+            if (begin.x == end.x && begin.y == end.y) return false
+            return true
+        }
+        if (begin.y == end.y || end.x - begin.x == begin.y - end.y) return true
         return false
     }
 
