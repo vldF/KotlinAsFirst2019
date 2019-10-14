@@ -120,64 +120,61 @@ fun diameter(vararg pts: Point): Segment {
     // Алгоритм Джарвиса. Он обращается ко всем на "Сер"
     require(pts.isNotEmpty())
 
-    val points = pts.toMutableList()
+    val points = pts.toSet().toMutableList()
 
     // Найдём стартовую точку
     // Не просто ищем, а переставляем ее в самое начало списка
     // Это нужно для успешного выхода из цикла ниже
     for (pIdx in points.indices) {
-        if (points[0].y > points[pIdx].y || points[0].y == points[pIdx].y && points[0].x < points[pIdx].x) {
+        if (points[pIdx].x == points[0].x && points[pIdx].y <= points[0].y || points[pIdx].x < points[0].x) {
             points[0] = points[pIdx].also { points[pIdx] = points[0] }
         }
     }
     val startPoint = points[0]
-    // Поиск второй точки
-    // Эта точка образует наименьший полярный угол относительно первой и наименьшее расстояние до первой
-    // (если точек с таким углом несколько)
-    var secondPoint = Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
-    var angle = Double.POSITIVE_INFINITY
-    var dist = Double.POSITIVE_INFINITY
-    for (pIdx in 1 until points.size) {
-        if (points[pIdx] == startPoint) continue
-        val ro = (sqrt((points[pIdx].x - startPoint.x).pow(2) + (points[pIdx].y - startPoint.y).pow(2)))
-        val phi = asin((points[pIdx].x - startPoint.x) / ro) + 2 * Math.PI
 
-        if ((phi < angle) || (abs(angle - phi) < 0.00002 && dist < ro)) {
-            secondPoint = points[pIdx]
-            angle = phi
-            dist = ro
+    // Ищем вторую точку, которая так же лежит на границе
+    val listBorderPoints = mutableListOf(startPoint)
+    var maxCos = -2.0
+    var secondPoint = Point(-1.0, -1.0)
+    for (p in points.slice((1 until points.size))) {
+        val dist = p.distance(startPoint)
+        val currentCos = (p.x - startPoint.x) / dist
+        if (currentCos > maxCos) {
+            maxCos = currentCos
+            secondPoint = p
         }
     }
-
-    val listBorderPoints = mutableListOf(startPoint)
     listBorderPoints.add(secondPoint)
-    var lastPoint = secondPoint
+
     var maxDist = -1.0
-    var pairOfFarthestPoints = Point(-1.0, -1.0) to Point(-1.0, -1.0)
-    while (startPoint != lastPoint) {
-        secondPoint = lastPoint
-        var cos = -2.0
-        var nextPoint = Point(-1.0, -1.0)
+    // Через две последние точки в списке граничных точек множества "проводим" прямую
+    // Затем перебираем все точки и через последнюю граничную точку и каждую из них "проводим" другую прямую
+    // Находим такую точку из списка, что косинус между этими прямыми максимален (угол максимален
+    // Параллельно находим расстояние
+    var farthestPoints = Segment(Point(-1.0, -1.0), Point(-1.0, -1.0))
+    while (startPoint != listBorderPoints.last()) {
+        maxCos = -2.0
+        var newPoint = Point(-1.0, -1.0)
         for (p in points) {
-            val currentCos = cosLines(listBorderPoints[listBorderPoints.size - 2], secondPoint, p)
-            if (currentCos > cos) {
-                cos = currentCos
-                nextPoint = p
+            val cos =
+                cosLines(listBorderPoints[listBorderPoints.size - 2], listBorderPoints[listBorderPoints.size - 1], p)
+            if (cos > maxCos) {
+                maxCos = cos
+                newPoint = p
             }
         }
-        val (newMaxDist, newPair) = findMaxDist(listBorderPoints, nextPoint)
-        if (newMaxDist > maxDist) {
-            maxDist = newMaxDist
-            pairOfFarthestPoints = newPair
+        val (d, seg) = findMaxDist(points, newPoint)
+        listBorderPoints.add(newPoint)
+        if (d > maxDist) {
+            maxDist = d
+            farthestPoints = seg
         }
-        lastPoint = nextPoint
-        listBorderPoints.add(nextPoint)
     }
-
-    return Segment(pairOfFarthestPoints.first, pairOfFarthestPoints.second)
+    return farthestPoints
 }
 
-fun findMaxDist(points: List<Point>, point: Point): Pair<Double, Pair<Point, Point>> {
+
+fun findMaxDist(points: List<Point>, point: Point): Pair<Double, Segment> {
     var dist = -1.0
     var neededPoint = Point(-1.0, -1.0)
     for (p in points) {
@@ -187,11 +184,11 @@ fun findMaxDist(points: List<Point>, point: Point): Pair<Double, Pair<Point, Poi
             neededPoint = p
         }
     }
-    return (dist to (point to neededPoint))
+    return dist to Segment(point, neededPoint)
 }
 
 /**
- * Косинус угла между прямыми AB и BC
+ * Косинус угла между ab и bc (через скалярное произведение)
  */
 fun cosLines(a: Point, b: Point, c: Point): Double {
     val v1 = Point(b.x - a.x, b.y - a.y)
