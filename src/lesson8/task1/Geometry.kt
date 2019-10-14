@@ -120,29 +120,26 @@ fun diameter(vararg pts: Point): Segment {
     // Алгоритм Джарвиса. Он обращается ко всем на "Сер"
     require(pts.isNotEmpty())
 
-    val points = pts.toSet().toMutableList()
+    val points = pts.toSet().toList().shuffled().toMutableList()
 
     // Найдём стартовую точку
     // Не просто ищем, а переставляем ее в самое начало списка
     // Это нужно для успешного выхода из цикла ниже
     for (pIdx in points.indices) {
-        if (points[pIdx].x <= points[0].x && points[pIdx].y <= points[0].y || points[pIdx].x < points[0].x) {
+        if (points[pIdx].x < points[0].x || points[pIdx].x == points[0].x && points[pIdx].y < points[0].y) {
             points[0] = points[pIdx].also { points[pIdx] = points[0] }
         }
     }
     val startPoint = points[0]
-
-    val listBorderPoints = mutableListOf(startPoint)
-    var maxCos = -2.0
-    var secondPoint = Point(-1.0, -1.0)
-    for (p in points.slice((1 until points.size))) {
-        val dist = p.distance(startPoint)
-        val currentCos = abs(p.x - startPoint.x) / dist
-        if (currentCos > maxCos) {
-            maxCos = currentCos
-            secondPoint = p
+    // Поиск второй точки
+    var secondPoint = Point(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+    for (pIdx in 1 until points.size) {
+        if (points[pIdx].y < secondPoint.y || points[pIdx].y == secondPoint.y && points[pIdx].x < points[0].x) {
+            secondPoint = points[pIdx]
         }
     }
+
+    val listBorderPoints = mutableListOf(startPoint)
     listBorderPoints.add(secondPoint)
     var lastPoint = secondPoint
     var maxDist = -1.0
