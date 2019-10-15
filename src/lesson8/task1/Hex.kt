@@ -303,6 +303,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         // Точки на одной прямой, ответ -- шестиугольник с радиусом, равному наибольшему расстоянию между точками
         // И центром на пересечении колец вокруг "крайних" точек
         return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = maxRadius, count = 2)
+    } else if (setOf(a, b, c).size == 2) {
+        // Две точки совпадают
+        return findIntersect(*setOf(a, b, c).toTypedArray(), maxRadius = maxRadius + 1, minRadius = 0, count = 2)
     }
 
     return findIntersect(a, b, c, maxRadius = maxRadius, count = 1, minRadius = maxRadius / 2)
@@ -326,7 +329,7 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0, 
             intersect = intersect.intersect(hexSet)
         }
         if (intersect.size == count)
-            return Hexagon(intersect.first(), max(1, intersect.first().distance(centers.first())))
+            return Hexagon(intersect.last(), max(0, intersect.last().distance(centers.first())))
     }
     return null
 }
