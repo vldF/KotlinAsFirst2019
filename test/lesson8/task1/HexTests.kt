@@ -127,6 +127,10 @@ class HexTests {
     fun hexagonByThreePoints() {
         assertEquals(
             221,
+            hexagonByThreePoints(HexPoint(-598, -999), HexPoint(-431, -999), HexPoint(-822, -557))?.radius
+        )
+        assertEquals(
+            221,
             hexagonByThreePoints(HexPoint(-377, -999), HexPoint(-558, -557), HexPoint(-557, -999))?.radius
         )
         assertEquals(
