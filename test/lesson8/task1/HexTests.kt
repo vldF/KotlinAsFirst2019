@@ -257,7 +257,7 @@ class HexTests {
             HexPoint(-1000, -737)
         )
         result = minContainingHexagon(*points)
-        assertEquals(1700, result.radius)
+        assertEquals(1698, result.radius)
         assertTrue(points.all { result.contains(it) })
     }
 
