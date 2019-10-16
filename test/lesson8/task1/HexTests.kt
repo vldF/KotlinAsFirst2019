@@ -126,6 +126,10 @@ class HexTests {
     @Tag("Impossible")
     fun hexagonByThreePoints() {
         assertEquals(
+            221,
+            hexagonByThreePoints(HexPoint(-377, -999), HexPoint(-558, -557), HexPoint(-557, -999))?.radius
+        )
+        assertEquals(
             443,
             hexagonByThreePoints(HexPoint(-1000, -999), HexPoint(-557, -558), HexPoint(-557, -558))?.radius
         )
@@ -150,9 +154,110 @@ class HexTests {
     @Test
     @Tag("Impossible")
     fun minContainingHexagon() {
-        val points = arrayOf(HexPoint(3, 1), HexPoint(3, 2), HexPoint(5, 4), HexPoint(8, 1))
-        val result = minContainingHexagon(*points)
+        var points = arrayOf(HexPoint(3, 1), HexPoint(3, 2), HexPoint(5, 4), HexPoint(8, 1))
+        var result = minContainingHexagon(*points)
         assertEquals(3, result.radius)
+        assertTrue(points.all { result.contains(it) })
+        points = arrayOf(
+            HexPoint(-999, -999),
+            HexPoint(-999, -73),
+            HexPoint(-367, 799),
+            HexPoint(-558, -132),
+            HexPoint(-558, -1000),
+            HexPoint(-557, -557),
+            HexPoint(-1000, -603),
+            HexPoint(-128, -558),
+            HexPoint(-999, -558),
+            HexPoint(-177, -557),
+            HexPoint(-24, -1000),
+            HexPoint(-999, -402),
+            HexPoint(-999, -1000),
+            HexPoint(-557, -1000),
+            HexPoint(-558, -558),
+            HexPoint(473, -999),
+            HexPoint(-557, -1000),
+            HexPoint(122, 395),
+            HexPoint(403, -502),
+            HexPoint(-558, -558),
+            HexPoint(380, -999),
+            HexPoint(-1000, -706),
+            HexPoint(782, -886),
+            HexPoint(-1000, -948),
+            HexPoint(-1000, -999),
+            HexPoint(-558, -557),
+            HexPoint(459, -1000),
+            HexPoint(-999, -557),
+            HexPoint(-558, -656),
+            HexPoint(-999, 791),
+            HexPoint(-983, 603),
+            HexPoint(-1000, -557),
+            HexPoint(-999, -962),
+            HexPoint(-558, -1000),
+            HexPoint(-116, -1000),
+            HexPoint(751, -4),
+            HexPoint(-999, -977),
+            HexPoint(-9, 467),
+            HexPoint(-1000, -1000),
+            HexPoint(903, -558),
+            HexPoint(-82, -1000),
+            HexPoint(-912, -999),
+            HexPoint(-999, -558),
+            HexPoint(-557, -557),
+            HexPoint(-557, -892),
+            HexPoint(-946, -557),
+            HexPoint(-999, -558),
+            HexPoint(-123, -558),
+            HexPoint(-178, -1000),
+            HexPoint(-558, -557),
+            HexPoint(-1000, -1000),
+            HexPoint(-1000, -557),
+            HexPoint(-557, -557),
+            HexPoint(676, -999),
+            HexPoint(-863, -999),
+            HexPoint(-1000, -557),
+            HexPoint(204, 890),
+            HexPoint(574, -330),
+            HexPoint(-999, -999),
+            HexPoint(314, 44),
+            HexPoint(-558, -375),
+            HexPoint(-1000, -558),
+            HexPoint(-999, -261),
+            HexPoint(-557, -557),
+            HexPoint(733, -557),
+            HexPoint(-936, -999),
+            HexPoint(-558, 598),
+            HexPoint(-558, -518),
+            HexPoint(989, -557),
+            HexPoint(-306, 143),
+            HexPoint(-557, 123),
+            HexPoint(-558, -296),
+            HexPoint(-690, -342),
+            HexPoint(-900, -557),
+            HexPoint(969, 426),
+            HexPoint(-557, -1000),
+            HexPoint(-999, 1000),
+            HexPoint(239, -367),
+            HexPoint(-31, -558),
+            HexPoint(-1000, 615),
+            HexPoint(-1000, 802),
+            HexPoint(-558, -999),
+            HexPoint(-842, -557),
+            HexPoint(-558, -745),
+            HexPoint(-558, 134),
+            HexPoint(-999, 973),
+            HexPoint(-999, -557),
+            HexPoint(-557, -974),
+            HexPoint(-558, -999),
+            HexPoint(-168, -999),
+            HexPoint(-999, -999),
+            HexPoint(289, -557),
+            HexPoint(-610, -1000),
+            HexPoint(-1000, 0),
+            HexPoint(-999, -1000),
+            HexPoint(-1000, -737)
+        )
+        result = minContainingHexagon(*points)
+        assertEquals(1700, result.radius)
         assertTrue(points.all { result.contains(it) })
     }
 

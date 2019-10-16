@@ -2,6 +2,7 @@
 
 package lesson8.task1
 
+import lesson6.task1.maxCharsInRepite
 import kotlin.math.*
 
 /**
@@ -84,6 +85,17 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
             for (i in 0 until radius) {
                 currentPoint = currentPoint.move(direction, 1)
                 res.add(currentPoint)
+            }
+        }
+        return res
+    }
+
+    fun getHexPoints(): MutableSet<HexPoint> {
+        val res = mutableSetOf<HexPoint>()
+        val newCenter = center.axialToCube()
+        for (x in -radius..radius) {
+            for (y in -radius..radius) {
+                res.add(Cube(x + newCenter.x, y + newCenter.y, -x - y + newCenter.z).cubeToAxial())
             }
         }
         return res
@@ -343,40 +355,81 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0, 
  * Если множество содержит один гекс, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  *
  * Пример: 13, 32, 45, 18 -- шестиугольник радиусом 3 (с центром, например, в 15)
+ *
+ *      60  61  62  63
+ *     50  51  52  53  54
+ *   40  41  42  43  44  45
+ * 30  31  32  33  34  35  36
+ *   21  22  23  24  25  26
+ *     12  13  14  15  16
+ *       03  04  05  06
  */
-fun minContainingHexagon(vararg points: HexPoint): Hexagon {
-    var currentRadius = 0
+fun minContainingHexagon(vararg pts: HexPoint): Hexagon {
+    val points = pts.toSet()
+    val pointsArray = pts.toList().toTypedArray()
+    var startRadius = 1
+    var endRadius = findMaxRadius(pointsArray, points)
+
     while (true) {
-        val unionPoints = findMultipyHexPoints(*points, Radius = currentRadius)
-        for (p in unionPoints) {
-            val hexagon = Hexagon(p, currentRadius)
-            if (points.all { hexagon.contains(it) }) return hexagon
-        }
-        currentRadius++
+        val (minRadius, maxRadius, hexagon) = findRadius(startRadius, endRadius, pointsArray, points)
+        if (minRadius == maxRadius) return hexagon
+        startRadius = minRadius
+        endRadius = maxRadius
     }
 }
 
-fun findMultipyHexPoints(vararg centers: HexPoint, Radius: Int): Set<HexPoint> {
-    val unions = mutableListOf<Set<HexPoint>>()
+/**
+ * Перебор для получения наибольшего радиуса
+ */
+fun findMaxRadius(pointsArray: Array<HexPoint>, points: Set<HexPoint>): Int {
+    var r = 1
+    while (true) {
+        if (hexagonContainsPoints(pointsArray, points, r) != null) {
+            return r
+        }
+        r += 500
+    }
+}
+
+fun findRadius(
+    startRadius: Int, endRadius: Int, pointsArray: Array<HexPoint>, points: Set<HexPoint>
+): Triple<Int, Int, Hexagon> {
+    var minRadius = startRadius
+    for (r in startRadius..endRadius step max(1, (endRadius - startRadius) / 10)) {
+        val hexagon = hexagonContainsPoints(pointsArray, points, r)
+        if (hexagon != null) return Triple(minRadius, r, hexagon)
+        minRadius = r + 1
+    }
+    return Triple(-1, -1, Hexagon(HexPoint(-1, -1), -1))
+}
+
+/**
+ * Возвращает шестиугольник, который включает в себя точки, или null
+ */
+fun hexagonContainsPoints(pointsArray: Array<HexPoint>, points: Set<HexPoint>, r: Int): Hexagon? {
+    val set = findMultipyHexPoints(*pointsArray, radius = r)
+    for (p in set) {
+        val hexagon = Hexagon(p, r)
+        if (points.all { hexagon.contains(it) }) {
+            return hexagon
+        }
+    }
+    return null
+}
+
+/**
+ * Кольца радиуса r около каждой из точек
+ */
+fun findMultipyHexPoints(vararg centers: HexPoint, radius: Int): Set<HexPoint> {
+    val unions = mutableSetOf<HexPoint>()
     for (center in centers) {
-        val hexSet = Hexagon(center, Radius).getRing()
-        unions.add(hexSet)
+        val hexSet = Hexagon(center, radius).getRing()
+        unions.addAll(hexSet)
     }
-    val allHexPoints = mutableListOf<HexPoint>()
-    val res = mutableSetOf<HexPoint>()
-    for (hexSet in unions) {
-        allHexPoints.addAll(hexSet)
-    }
-    for (hexSet in unions) {
-        for (point in hexSet) {
-            if (allHexPoints.count { it == point } > 1) {
-                res.add(point)
-            }
-        }
-    }
-    return res
+    return unions
 
 }
+
 
 
 
