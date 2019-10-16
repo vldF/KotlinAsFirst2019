@@ -308,28 +308,21 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  * Для точек 32, 33 и 35 следует вернуть шестиугольник радиусом 3 (с центром в 62 или 05).
  *
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
+ *
+ * Алгоритм
+ * Находим наибольшй радиус, как наибольшее расстояние между точками (этот способ нахождения верен, так как
+ * радиус шестиугольника равен его стороне
+ * Начинаем перебор радиусов от maxRadius / 2 до maxRadius + 1 (на всякий случай)
+ * Находим кольцо около каждой точки этого радиуса и ищем их пересечение. Если они есть, то для каждого из них находим
+ * еще одно кольцо такого же радиуса
+ * Проверяем, что все наши точки лежат в этом кольце
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    if (HexSegment(a, b).direction().isParallel(HexSegment(b, c).direction())) {
-        // Точки на одной прямой, ответ -- шестиугольник с радиусом, равному наибольшему расстоянию между точками
-        // И центром на пересечении колец вокруг "крайних" точек
-        return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = maxRadius, count = 2)
-    } else if (setOf(a, b, c).size == 2) {
-        // Две точки совпадают
-        return findIntersect(*setOf(a, b, c).toTypedArray(), maxRadius = maxRadius + 1, minRadius = 0, count = 2)
-    }
-
-    return findIntersect(a, b, c, maxRadius = maxRadius, count = 1, minRadius = maxRadius / 2)
+    return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = maxRadius / 2)
 }
 
-/**
- * Поиск таких точек (size=count), что расстояние от этих точек до всех точек из centers равно
- *
- * В теории, можно попробовать решить аналитически систему из трёх уравнений с модулем, но это нереально сложно
- * и код будет еще больше, чем тут
- */
-fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0, count: Int): Hexagon? {
+fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0): Hexagon? {
     for (r in minRadius..maxRadius) {
         if (r == 221) {
             print(1)
