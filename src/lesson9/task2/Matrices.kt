@@ -297,6 +297,7 @@ fun findHoles(matrix: Matrix<Int>): Holes {
     return Holes(rows, cols)
 }
 
+
 /**
  * Класс для описания местонахождения "дырок" в матрице
  */
@@ -361,7 +362,7 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * Инвертировать заданную матрицу.
  * При инвертировании знак каждого элемента матрицы следует заменить на обратный
  */
-operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
+operator fun MatrixImpl<Int>.unaryMinus(): MatrixImpl<Int> {
     for (i in data.indices) {
         data[i] *= -1
     }
@@ -487,7 +488,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             referenceFirst[y, x] = y * 4 + x + 1
         }
     }
-    val referenceSecond = referenceFirst.copy(-1)
+    val referenceSecond = matrixCopy(referenceFirst)
     referenceFirst[3, 3] = 0
     referenceSecond[3, 3] = 0
     referenceSecond[3, 1] = 15
@@ -512,7 +513,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
         setOfClosedStates.add(currentState.field)
         listOfOpenedStates.remove(currentState)
         for (move in currentState.findCellsNeighbours()) {
-            val newField = currentState.field.copy(-1)
+            val newField = matrixCopy(currentState.field)
             val newMovies = currentState.movies.toMutableList()
             newMovies.add(newField[move])
 
@@ -537,6 +538,16 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             listOfOpenedStates.add(newState)
         }
     }
+}
+
+fun matrixCopy(matrix: Matrix<Int>): Matrix<Int> {
+    val res = MatrixImpl(matrix.height, matrix.width, -1)
+    for (i in 0 until matrix.height) {
+        for (j in 0 until matrix.width) {
+            res[i, j] = matrix[i, j]
+        }
+    }
+    return res
 }
 
 class GameState(

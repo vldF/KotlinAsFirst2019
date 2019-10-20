@@ -1,13 +1,14 @@
 package lesson9.task2
 
 import lesson9.task1.Matrix
+import lesson9.task1.MatrixImpl
 import lesson9.task1.createMatrix
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 class Tests {
-    private fun <E> createMatrix(height: Int, width: Int, values: List<List<E>>): Matrix<E> {
+    private fun <E> createMatrix(height: Int, width: Int, values: List<List<E>>): MatrixImpl<E> {
         val matrix = createMatrix(height, width, values[0][0])
         for (row in 0 until height) {
             for (column in 0 until width) {

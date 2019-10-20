@@ -20,9 +20,6 @@ interface Matrix<E> {
     /** Ширина */
     val width: Int
 
-    /** Данные */
-    var data: MutableList<E>
-
     /**
      * Доступ к ячейке.
      * Методы могут бросить исключение, если ячейка не существует или пуста
@@ -39,15 +36,15 @@ interface Matrix<E> {
     fun getCol(col: Int): MutableList<E> {
         val res = mutableListOf<E>()
         for (i in 0 until height) {
-            res.add(data[col + i * width])
+            res.add(get(i, col))
         }
         return res
     }
 
     fun getRow(row: Int): MutableList<E> {
         val res = mutableListOf<E>()
-        for (i in row * width until (row + 1) * width) {
-            res.add(data[i])
+        for (i in 0 until width) {
+            res.add(get(row, i))
         }
         return res
     }
@@ -86,11 +83,6 @@ interface Matrix<E> {
 
     operator fun set(cell: Cell, value: E)
 
-    fun copy(default: E): Matrix<E> {
-        val res = MatrixImpl<E>(height, width, default)
-        res.data = data.toMutableList()
-        return res
-    }
 }
 
 /**
@@ -100,7 +92,7 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
+fun <E> createMatrix(height: Int, width: Int, e: E): MatrixImpl<E> = MatrixImpl(height, width, e)
 
 /**
  * Средняя сложность
@@ -108,7 +100,7 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(heig
  * Реализация интерфейса "матрица"
  */
 class MatrixImpl<E>(override val height: Int, override val width: Int, defaultValue: E) : Matrix<E> {
-    override var data = mutableListOf<E>()
+    var data = mutableListOf<E>()
 
     init {
         require(!(height <= 0 || width <= 0))
