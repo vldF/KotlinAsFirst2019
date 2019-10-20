@@ -20,6 +20,9 @@ interface Matrix<E> {
     /** Ширина */
     val width: Int
 
+    /** Данные */
+    var data: MutableList<E>
+
     /**
      * Доступ к ячейке.
      * Методы могут бросить исключение, если ячейка не существует или пуста
@@ -28,6 +31,53 @@ interface Matrix<E> {
 
     operator fun get(cell: Cell): E
 
+    fun saftyGet(row: Int, col: Int, default: E): E {
+        if (row in 0 until height && col in 0 until width) return get(row, col)
+        return default
+    }
+
+    fun getCol(col: Int): MutableList<E> {
+        val res = mutableListOf<E>()
+        for (i in 0 until height) {
+            res.add(data[col + i * width])
+        }
+        return res
+    }
+
+    fun getRow(row: Int): MutableList<E> {
+        val res = mutableListOf<E>()
+        for (i in row * width until (row + 1) * width) {
+            res.add(data[i])
+        }
+        return res
+    }
+
+    fun getLeftSum(toRow: Int, toCol: Int): List<E> {
+        val res = mutableListOf<E>()
+        for (j in 0..toRow) {
+            for (i in 0..toCol) {
+                res.add(get(i, j))
+            }
+        }
+        return res
+    }
+
+    fun partyEquals(other: Matrix<E>, row: Int, col: Int): Boolean {
+        var trigger = false
+        for (y in 0 until other.width) {
+            for (x in 0 until other.height) {
+                if (x + col !in 0 until width || y + row !in 0 until height) return false
+                trigger = true
+                if (other[y, x] == get(y + row, x + col)) return false
+            }
+        }
+        return trigger
+    }
+
+    fun swap(c1: Cell, c2: Cell) {
+        set(c1, get(c2)).also { set(c2, get(c1)) }
+    }
+
     /**
      * Запись в ячейку.
      * Методы могут бросить исключение, если ячейка не существует
@@ -35,6 +85,12 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
+
+    fun copy(default: E): Matrix<E> {
+        val res = MatrixImpl<E>(height, width, default)
+        res.data = data.toMutableList()
+        return res
+    }
 }
 
 /**
@@ -52,7 +108,7 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(heig
  * Реализация интерфейса "матрица"
  */
 class MatrixImpl<E>(override val height: Int, override val width: Int, defaultValue: E) : Matrix<E> {
-    var data = mutableListOf<E>()
+    override var data = mutableListOf<E>()
 
     init {
         require(!(height <= 0 || width <= 0))
@@ -81,11 +137,13 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, defaultVa
 
     override fun toString(): String {
         val res = StringBuilder()
-        for (h in 0 until height - 1) {
-            res.append(data.slice(h * width..(h + 1) * width))
+        for (h in 0 until height) {
+            res.append(data.slice(h * width until (h + 1) * width))
         }
+
         return res.toString()
     }
+
     override fun hashCode(): Int {
         var result = height
         result = 31 * result + width

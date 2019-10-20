@@ -283,18 +283,6 @@ class Tests {
     @Test
     @Tag("Hard")
     fun canOpenLock() {
-        assertFalse(
-            canOpenLock(
-                key = createMatrix(1, 1, listOf(listOf(1))),
-                lock = createMatrix(1, 1, listOf(listOf(1)))
-            ).first
-        )
-        assertEquals(
-            Triple(true, 0, 0), canOpenLock(
-                key = createMatrix(1, 1, listOf(listOf(1))),
-                lock = createMatrix(1, 1, listOf(listOf(0)))
-            )
-        )
         assertEquals(
             Triple(true, 0, 1), canOpenLock(
                 key = createMatrix(2, 2, listOf(listOf(1, 0), listOf(0, 1))),
@@ -306,6 +294,18 @@ class Tests {
                 key = createMatrix(2, 2, listOf(listOf(1, 1), listOf(1, 0))),
                 lock = createMatrix(3, 3, listOf(listOf(1, 0, 1), listOf(0, 1, 0), listOf(1, 1, 1)))
             ).first
+        )
+        assertFalse(
+            canOpenLock(
+                key = createMatrix(1, 1, listOf(listOf(1))),
+                lock = createMatrix(1, 1, listOf(listOf(1)))
+            ).first
+        )
+        assertEquals(
+            Triple(true, 0, 0), canOpenLock(
+                key = createMatrix(1, 1, listOf(listOf(1))),
+                lock = createMatrix(1, 1, listOf(listOf(0)))
+            )
         )
     }
 
@@ -399,26 +399,51 @@ class Tests {
         createMatrix(
             4, 4, listOf(
                 listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
-                listOf(9, 10, 11, 12), listOf(13, 14, 15, 0)
+                listOf(9, 0, 10, 11), listOf(13, 14, 15, 12)
             )
         ).assertSolution()
-        createMatrix(
-            4, 4, listOf(
-                listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
-                listOf(9, 10, 11, 12), listOf(13, 15, 14, 0)
-            )
-        ).assertSolution()
+        println(1)
         createMatrix(
             4, 4, listOf(
                 listOf(5, 7, 9, 2), listOf(1, 12, 14, 15),
                 listOf(3, 4, 6, 8), listOf(10, 11, 13, 0)
             )
         ).assertSolution()
+        println(3)
         createMatrix(
             4, 4, listOf(
                 listOf(0, 1, 2, 3), listOf(4, 5, 6, 7),
                 listOf(8, 9, 10, 11), listOf(12, 13, 14, 15)
             )
         ).assertSolution()
+        println(4)
+        createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
+                listOf(9, 10, 11, 12), listOf(13, 14, 15, 0)
+            )
+        ).assertSolution()
+        println(1)
+        createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
+                listOf(9, 10, 11, 12), listOf(13, 15, 14, 0)
+            )
+        ).assertSolution()
+        println(2)
+        createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
+                listOf(9, 10, 11, 12), listOf(13, 14, 0, 15)
+            )
+        ).assertSolution()
+        println(2.1)
+        createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
+                listOf(9, 10, 0, 12), listOf(13, 14, 11, 15)
+            )
+        ).assertSolution()
+        println(2.2)
     }
 }

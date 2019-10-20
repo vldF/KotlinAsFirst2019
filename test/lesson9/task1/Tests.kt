@@ -32,6 +32,12 @@ class Tests {
     }
 
     @Test
+    fun getStr() {
+        val matrix = createMatrix(4, 6, 0.0)
+        print(matrix.toString())
+    }
+
+    @Test
     @Tag("Normal")
     fun getSetString() {
         val matrix = createMatrix(2, 2, "")
