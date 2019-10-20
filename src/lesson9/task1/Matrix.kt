@@ -61,8 +61,8 @@ interface Matrix<E> {
 
     fun partyEquals(other: Matrix<E>, row: Int, col: Int): Boolean {
         var trigger = false
-        for (y in 0 until other.width) {
-            for (x in 0 until other.height) {
+        for (x in 0 until other.width) {
+            for (y in 0 until other.height) {
                 if (x + col !in 0 until width || y + row !in 0 until height) return false
                 trigger = true
                 if (other[y, x] == get(y + row, x + col)) return false

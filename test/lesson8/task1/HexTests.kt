@@ -125,10 +125,7 @@ class HexTests {
     @Test
     @Tag("Impossible")
     fun hexagonByThreePoints() {
-        assertEquals(
-            -100,
-            hexagonByThreePoints(HexPoint(547, 855), HexPoint(-999, -999), HexPoint(-558, 341))?.radius
-        )
+        assertNull(hexagonByThreePoints(HexPoint(547, 855), HexPoint(-999, -999), HexPoint(-558, 341)))
         assertNull(hexagonByThreePoints(HexPoint(-557, -999), HexPoint(-965, -1000), HexPoint(448, 692)))
         assertEquals(
             3,
@@ -161,6 +158,19 @@ class HexTests {
         var points = arrayOf(HexPoint(3, 1), HexPoint(3, 2), HexPoint(5, 4), HexPoint(8, 1))
         var result = minContainingHexagon(*points)
         assertEquals(3, result.radius)
+        assertTrue(points.all { result.contains(it) })
+        points = arrayOf(
+            HexPoint(-1000, 763),
+            HexPoint(705, 463),
+            HexPoint(-1000, 400),
+            HexPoint(-557, -1000),
+            HexPoint(-999, -557),
+            HexPoint(211, -1000),
+            HexPoint(-1000, 359),
+            HexPoint(-665, -557)
+        )
+        result = minContainingHexagon(*points)
+        assertEquals(1363, result.radius)
         assertTrue(points.all { result.contains(it) })
         points = arrayOf(
             HexPoint(-999, -999),
