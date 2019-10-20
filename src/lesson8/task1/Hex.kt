@@ -324,9 +324,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
 
 fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0): Hexagon? {
     for (r in minRadius..maxRadius) {
-        if (r == 221) {
-            print(1)
-        }
         val unions = mutableListOf<Set<HexPoint>>()
         for (center in centers) {
             val hexSet = Hexagon(center, r).getRing()

@@ -12,9 +12,6 @@ import kotlin.math.abs
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
-
-val referenceFirst = createMatrix(4, 4, -1)
-
 /**
  * Пример
  *
@@ -485,7 +482,10 @@ fun findTrueNeighbours(x: Int, y: Int, matrix: Matrix<Int>): MutableList<Int> {
  */
 fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     val listOfOpenedStates = PriorityQueue<GameState>(compareBy { it.f })
-    val setOfClosedStates = mutableSetOf<Matrix<Int>>()
+    val setOfOpenedFields = mutableSetOf<Matrix<Int>>()
+    val setOfClosedFields = mutableSetOf<Matrix<Int>>()
+
+    val referenceFirst = createMatrix(4, 4, -1)
     for (x in 0..3) {
         for (y in 0..3) {
             referenceFirst[y, x] = y * 4 + x + 1
@@ -508,12 +508,9 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     }
     val firstState = GameState(matrix, null, 0, zero, mutableListOf())
     listOfOpenedStates.add(firstState)
-    var s = 0
     while (true) {
-        s++
-        if (s % 1000 == 0) println(s)
         val currentState = listOfOpenedStates.poll()
-        setOfClosedStates.add(currentState.field)
+        setOfClosedFields.add(currentState.field)
         listOfOpenedStates.remove(currentState)
         for (move in currentState.findCellsNeighbours()) {
             val newField = currentState.field.copy()
@@ -522,23 +519,17 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
 
             // do move and create new GameState
             newField[currentState.zero] = newField[move].also { newField[move] = newField[currentState.zero] }
-            if (newField in setOfClosedStates) {
+            if (newField in setOfClosedFields || newField in setOfOpenedFields) {
                 continue
             }
-            val newState = GameState(newField, currentState, currentState.f, move, newMovies)
+            val newState = GameState(newField, currentState, 0, move, newMovies)
             newState.calcH()
+
             if (newField == referenceFirst || newField == referenceSecond) {
                 return newState.movies
             }
-
-            val oldGameState = listOfOpenedStates.find { it.field == newField }
-            if (oldGameState != null) {
-                if (oldGameState.f > newState.f) {
-                    listOfOpenedStates.remove(oldGameState)
-                }
-            }
-
             listOfOpenedStates.add(newState)
+            setOfOpenedFields.add(newField)
         }
     }
 }
@@ -564,8 +555,8 @@ class GameState(
         for (x in 0 until 4) {
             for (y in 0 until 4) {
                 if (field[y, x] != y * 4 + x + 1) {
-                    if (field[y, x] == 0) f += abs(x - 3) + abs(y - 3)
-                    f += (abs(field[y, x] % 4 - y) + abs(field[y, x] / 4 - x))
+                    f += if (field[y, x] == 0) abs(x - 3) + abs(y - 3)
+                    else abs((field[y, x] - 1) % 4 - x) + abs(field[y, x] / 4 - y)
                 }
             }
         }
