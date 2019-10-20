@@ -69,7 +69,7 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  *  9  8  7  6
  */
 fun generateSpiral(height: Int, width: Int): Matrix<Int> {
-    val matrix = MatrixImpl<Int>(height, width, 0)
+    val matrix = MatrixImpl(height, width, 0)
     var idxRow = 0
     var idxCol = 0
     var step = 1
@@ -249,7 +249,7 @@ fun isLatin(matrix: Matrix<Int>): Boolean {
  * 42 ===> 0
  */
 fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
-    val res = MatrixImpl<Int>(matrix.height, matrix.width, 0)
+    val res = MatrixImpl(matrix.height, matrix.width, 0)
     for (x in 0 until matrix.width) {
         for (y in 0 until matrix.height) {
             res[y, x] = findNeighbours(x, y, matrix).sum()
@@ -362,11 +362,14 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * Инвертировать заданную матрицу.
  * При инвертировании знак каждого элемента матрицы следует заменить на обратный
  */
-operator fun MatrixImpl<Int>.unaryMinus(): MatrixImpl<Int> {
-    for (i in data.indices) {
-        data[i] *= -1
+operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
+    val res = MatrixImpl(height, width, -1)
+    for (i in 0 until height) {
+        for (j in 0 until width) {
+            res[i, j] = -this[i, j]
+        }
     }
-    return this
+    return res
 }
 
 
@@ -379,7 +382,7 @@ operator fun MatrixImpl<Int>.unaryMinus(): MatrixImpl<Int> {
  * Подробно про порядок умножения см. статью Википедии "Умножение матриц".
  */
 operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
-    val res = MatrixImpl<Int>(height, other.width, 0)
+    val res = MatrixImpl(height, other.width, 0)
     for (y in 0 until height) {
         for (x in 0 until other.width) {
             res[y, x] = lesson4.task1.times(getRow(y), other.getCol(x))
@@ -488,7 +491,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             referenceFirst[y, x] = y * 4 + x + 1
         }
     }
-    val referenceSecond = matrixCopy(referenceFirst)
+    val referenceSecond = referenceFirst.copy()
     referenceFirst[3, 3] = 0
     referenceSecond[3, 3] = 0
     referenceSecond[3, 1] = 15
@@ -513,7 +516,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
         setOfClosedStates.add(currentState.field)
         listOfOpenedStates.remove(currentState)
         for (move in currentState.findCellsNeighbours()) {
-            val newField = matrixCopy(currentState.field)
+            val newField = currentState.field.copy()
             val newMovies = currentState.movies.toMutableList()
             newMovies.add(newField[move])
 
@@ -540,11 +543,11 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     }
 }
 
-fun matrixCopy(matrix: Matrix<Int>): Matrix<Int> {
-    val res = MatrixImpl(matrix.height, matrix.width, -1)
-    for (i in 0 until matrix.height) {
-        for (j in 0 until matrix.width) {
-            res[i, j] = matrix[i, j]
+fun Matrix<Int>.copy(): Matrix<Int> {
+    val res = MatrixImpl(height, width, -1)
+    for (i in 0 until height) {
+        for (j in 0 until width) {
+            res[i, j] = this[i, j]
         }
     }
     return res
