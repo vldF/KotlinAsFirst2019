@@ -319,8 +319,28 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = maxRadius / 2)
+    val toAdd = maxRadius / 10 + 1
+    var minRadius = -toAdd + 1
+    while (minRadius <= maxRadius) {
+        minRadius += toAdd
+        val unions = mutableListOf<Set<HexPoint>>()
+        // Этот ужас потом поправлю
+        unions.add(Hexagon(a, minRadius).getRing() + Hexagon(a, minRadius - 1).getRing() + Hexagon(a, minRadius + 1).getRing() + Hexagon(a, minRadius - 2).getRing())
+        unions.add(Hexagon(b, minRadius).getRing() + Hexagon(b, minRadius - 1).getRing() + Hexagon(b, minRadius + 1).getRing() + Hexagon(b, minRadius - 2).getRing())
+        unions.add(Hexagon(c, minRadius).getRing() + Hexagon(c, minRadius - 1).getRing() + Hexagon(c, minRadius + 1).getRing() + Hexagon(c, minRadius - 2).getRing())
+
+        var intersect = unions.first()
+        for (hexSet in unions) {
+            intersect = intersect.intersect(hexSet)
+        }
+        if (intersect.isNotEmpty()) {
+            minRadius -= toAdd
+            break
+        }
+    }
+    return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = minRadius)
 }
+
 
 fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0): Hexagon? {
     for (r in minRadius..maxRadius) {
@@ -335,8 +355,9 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0):
         }
         for (c in intersect) {
             val hexagonRing = Hexagon(c, r).getRing()
-            if (centers.all { hexagonRing.contains(it) })
-                return Hexagon(c, r)
+            return if (centers.all { hexagonRing.contains(it) })
+                Hexagon(c, r)
+            else null
         }
     }
     return null
