@@ -319,20 +319,22 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    val toAdd = maxRadius / 10 + 1
+    val toAdd = maxRadius / (if (maxRadius / 100 != 0) 100 else 10) + 1
     var minRadius = -toAdd + 1
     while (minRadius <= maxRadius) {
         minRadius += toAdd
-        val unions = mutableListOf<Set<HexPoint>>()
-        // Этот ужас потом поправлю
-        unions.add(Hexagon(a, minRadius).getRing() + Hexagon(a, minRadius - 1).getRing() + Hexagon(a, minRadius + 1).getRing() + Hexagon(a, minRadius - 2).getRing() + Hexagon(a, minRadius - 3).getRing() + Hexagon(a, minRadius + 3).getRing())
-        unions.add(Hexagon(b, minRadius).getRing() + Hexagon(b, minRadius - 1).getRing() + Hexagon(b, minRadius + 1).getRing() + Hexagon(b, minRadius - 2).getRing() + Hexagon(b, minRadius - 3).getRing() + Hexagon(b, minRadius + 3).getRing())
-        unions.add(Hexagon(c, minRadius).getRing() + Hexagon(c, minRadius - 1).getRing() + Hexagon(c, minRadius + 1).getRing() + Hexagon(c, minRadius - 2).getRing() + Hexagon(c, minRadius - 3).getRing() + Hexagon(c, minRadius + 3).getRing())
 
-        var intersect = unions.first()
-        for (hexSet in unions) {
-            intersect = intersect.intersect(hexSet)
+        val unionA = mutableSetOf<HexPoint>()
+        val unionB = mutableSetOf<HexPoint>()
+        val unionC = mutableSetOf<HexPoint>()
+
+        for (i in 0..3) {
+            unionA.addAll(Hexagon(a, minRadius).getRing())
+            unionB.addAll(Hexagon(b, minRadius).getRing())
+            unionC.addAll(Hexagon(c, minRadius).getRing())
         }
+
+        val intersect = unionA.intersect(unionB).intersect(unionC)
         if (intersect.isNotEmpty()) {
             minRadius -= toAdd
             break
