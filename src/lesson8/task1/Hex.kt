@@ -306,8 +306,8 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  * Проверяем, что все наши точки лежат в этом кольце
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
-    val maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    val toAdd = maxRadius / (if (maxRadius / 100 != 0) 100 else 10) + 1
+    var maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
+    val toAdd = maxRadius / (if (maxRadius / 100 > 0) 100 else 10) + 1
     var minRadius = -toAdd + 1
     while (minRadius <= maxRadius) {
         minRadius += toAdd
@@ -316,7 +316,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         val unionB = mutableSetOf<HexPoint>()
         val unionC = mutableSetOf<HexPoint>()
 
-        for (i in -1..1) {
+        for (i in -2..2) {
             unionA.addAll(Hexagon(a, minRadius + i).getRing())
             unionB.addAll(Hexagon(b, minRadius + i).getRing())
             unionC.addAll(Hexagon(c, minRadius + i).getRing())
@@ -324,11 +324,12 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
 
         val intersect = unionA.intersect(unionB).intersect(unionC)
         if (intersect.isNotEmpty()) {
+            maxRadius = minRadius + 100
             minRadius -= toAdd
             break
         }
     }
-    return findIntersect(a, b, c, maxRadius = maxRadius + 1, minRadius = minRadius)
+    return findIntersect(a, b, c, maxRadius = maxRadius, minRadius = minRadius)
 }
 
 
