@@ -4,7 +4,7 @@ package lesson11.task1
 
 import kotlin.math.pow
 
-val regex = Regex("([+-]*[\\d\\.]*)")
+val regex = Regex("([+-]*[\\d.]*)")
 
 /**
  * Класс "комплексое число".
