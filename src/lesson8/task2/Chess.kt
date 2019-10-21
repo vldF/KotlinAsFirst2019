@@ -6,6 +6,8 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.sign
 
+val knightMoves = listOf(-2 to -1, -2 to 1, -1 to 2, 1 to 2, 2 to 1, 2 to -1, -1 to -2, 1 to -2)
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -218,15 +220,8 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     while (start != end) {
         val deltaX = (end.row - start.row).sign
         val deltaY = (end.column - start.column).sign
-
-        when {
-            start.column == end.column -> start.row += deltaX
-            start.row == end.row -> start.column += deltaY
-            else -> {
-                start.row -= deltaY
-                start.column -= deltaX
-            }
-        }
+        start.row += deltaX
+        start.column += deltaY
         moves.add(start.copy())
     }
     return moves
@@ -255,20 +250,8 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int {
-    require(start.inside() && end.inside())
+fun knightMoveNumber(start: Square, end: Square): Int = knightTrajectory(start, end).size - 1
 
-    // Алгоритм А*
-    val openedStates = PriorityQueue<Square>(compareBy { abs(it.column - end.column) + abs(it.row - end.row) })
-    val closedStates = mutableSetOf<Square>()
-    openedStates.add(start)
-
-    while (openedStates.isNotEmpty()) {
-        val currentState = openedStates.poll()
-
-    }
-    TODO()
-}
 
 /**
  * Очень сложная
@@ -290,4 +273,49 @@ fun knightMoveNumber(start: Square, end: Square): Int {
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    require(start.inside() && end.inside())
+    // Алгоритм А*
+    val openedStates = PriorityQueue<ChessGameState>(compareBy { it.f })
+    val closedMoves = mutableSetOf<Square>()
+
+    val firstState = ChessGameState(start, 0, mutableListOf(start), end)
+    firstState.calcH()
+    openedStates.add(firstState)
+
+    while (true) {
+        val currentState = openedStates.poll()
+        if (currentState.coords == end) return currentState.moves
+        closedMoves.add(currentState.coords)
+        for (move in currentState.getNeighbors()) {
+            if (move in closedMoves)
+                continue
+            val moves = currentState.moves.toMutableList()
+            moves.add(move)
+            val newState = ChessGameState(move, moves.size, moves, end)
+            newState.calcH()
+
+            val g = openedStates.find { it.coords == move }
+            if (g != null) {
+                if (g.f > newState.f) openedStates.remove(g)
+                else continue
+            }
+            openedStates.add(newState)
+        }
+    }
+}
+
+class ChessGameState(var coords: Square, var f: Int, var moves: MutableList<Square>, private val end: Square) {
+    fun calcH() {
+        f += abs(coords.column - end.column) + abs(coords.row - end.row)
+    }
+
+    fun getNeighbors(): MutableList<Square> {
+        val res = mutableListOf<Square>()
+        for ((first, second) in knightMoves) {
+            val s = Square(coords.column + first, coords.row + second)
+            if (s.inside()) res.add(s)
+        }
+        return res
+    }
+}

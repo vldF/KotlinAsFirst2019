@@ -108,11 +108,11 @@ class Tests {
     @Test
     @Tag("Normal")
     fun kingMoveNumber() {
-        assertEquals(0, kingMoveNumber(square("e3"), square("e3")))
         assertEquals(1, kingMoveNumber(square("c2"), square("b1")))
         assertEquals(2, kingMoveNumber(square("g8"), square("f6")))
         assertEquals(6, kingMoveNumber(square("a8"), square("g8")))
         assertEquals(7, kingMoveNumber(square("a1"), square("h8")))
+        assertEquals(0, kingMoveNumber(square("e3"), square("e3")))
     }
 
     private fun List<Square>.assertKingTrajectory(start: Square, end: Square, length: Int) {
