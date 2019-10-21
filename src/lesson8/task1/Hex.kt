@@ -2,7 +2,6 @@
 
 package lesson8.task1
 
-import lesson6.task1.maxCharsInRepite
 import kotlin.math.*
 
 /**
@@ -85,17 +84,6 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
             for (i in 0 until radius) {
                 currentPoint = currentPoint.move(direction, 1)
                 res.add(currentPoint)
-            }
-        }
-        return res
-    }
-
-    fun getHexPoints(): MutableSet<HexPoint> {
-        val res = mutableSetOf<HexPoint>()
-        val newCenter = center.axialToCube()
-        for (x in -radius..radius) {
-            for (y in -radius..radius) {
-                res.add(Cube(x + newCenter.x, y + newCenter.y, -x - y + newCenter.z).cubeToAxial())
             }
         }
         return res
@@ -328,10 +316,10 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         val unionB = mutableSetOf<HexPoint>()
         val unionC = mutableSetOf<HexPoint>()
 
-        for (i in 0..3) {
-            unionA.addAll(Hexagon(a, minRadius).getRing())
-            unionB.addAll(Hexagon(b, minRadius).getRing())
-            unionC.addAll(Hexagon(c, minRadius).getRing())
+        for (i in -1..1) {
+            unionA.addAll(Hexagon(a, minRadius + i).getRing())
+            unionB.addAll(Hexagon(b, minRadius + i).getRing())
+            unionC.addAll(Hexagon(c, minRadius + i).getRing())
         }
 
         val intersect = unionA.intersect(unionB).intersect(unionC)

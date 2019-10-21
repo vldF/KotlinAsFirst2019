@@ -2,14 +2,16 @@
 
 package lesson8.task2
 
+import java.util.*
 import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
  * Горизонтали нумеруются снизу вверх, вертикали слева направо.
  */
-data class Square(val column: Int, val row: Int) {
+data class Square(var column: Int, var row: Int) {
     /**
      * Пример
      *
@@ -194,9 +196,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int {
-    TODO()
-}
+fun kingMoveNumber(start: Square, end: Square): Int = kingTrajectory(start, end).size - 1
 
 /**
  * Сложная
@@ -212,7 +212,25 @@ fun kingMoveNumber(start: Square, end: Square): Int {
  *          kingTrajectory(Square(3, 5), Square(6, 2)) = listOf(Square(3, 5), Square(4, 4), Square(5, 3), Square(6, 2))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun kingTrajectory(start: Square, end: Square): List<Square> {
+    val moves = mutableListOf<Square>()
+    moves.add(start.copy())
+    while (start != end) {
+        val deltaX = (end.row - start.row).sign
+        val deltaY = (end.column - start.column).sign
+
+        when {
+            start.column == end.column -> start.row += deltaX
+            start.row == end.row -> start.column += deltaY
+            else -> {
+                start.row -= deltaY
+                start.column -= deltaX
+            }
+        }
+        moves.add(start.copy())
+    }
+    return moves
+}
 
 /**
  * Сложная
@@ -237,7 +255,20 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int {
+    require(start.inside() && end.inside())
+
+    // Алгоритм А*
+    val openedStates = PriorityQueue<Square>(compareBy { abs(it.column - end.column) + abs(it.row - end.row) })
+    val closedStates = mutableSetOf<Square>()
+    openedStates.add(start)
+
+    while (openedStates.isNotEmpty()) {
+        val currentState = openedStates.poll()
+
+    }
+    TODO()
+}
 
 /**
  * Очень сложная
