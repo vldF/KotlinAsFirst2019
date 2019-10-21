@@ -130,6 +130,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun kingTrajectory() {
+        assertEquals(listOf(Square(1, 2)), kingTrajectory(Square(1, 2), Square(1, 2)))
         assertEquals(listOf(square("f3")), kingTrajectory(square("f3"), square("f3")))
         kingTrajectory(square("c2"), square("a6")).assertKingTrajectory(square("c2"), square("a6"), 4)
         assertEquals(

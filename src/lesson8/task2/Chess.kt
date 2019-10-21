@@ -215,6 +215,7 @@ fun kingMoveNumber(start: Square, end: Square): Int = kingTrajectory(start, end)
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun kingTrajectory(start: Square, end: Square): List<Square> {
+    require(start.inside() && end.inside())
     val moves = mutableListOf<Square>()
     moves.add(start.copy())
     while (start != end) {
