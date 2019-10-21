@@ -133,14 +133,12 @@ fun diameter(vararg pts: Point): Segment {
     val startPoint = points[0]
 
     // Ищем вторую точку, которая так же лежит на границе
+    // Через поворот (векторное произведение, если оно больше 0, то точка лежит слева
     val listBorderPoints = mutableListOf(startPoint)
     var maxCos = -2.0
-    var secondPoint = Point(-1.0, -1.0)
-    for (p in points.slice((1 until points.size))) {
-        val dist = p.distance(startPoint)
-        val currentCos = (p.x - startPoint.x) / dist
-        if (currentCos > maxCos) {
-            maxCos = currentCos
+    var secondPoint = points[1]
+    for (p in points.slice((2 until points.size))) {
+        if (vectorRotate(startPoint, secondPoint, p) > 0) {
             secondPoint = p
         }
     }
@@ -172,6 +170,8 @@ fun diameter(vararg pts: Point): Segment {
     }
     return farthestPoints
 }
+
+fun vectorRotate(a: Point, b: Point, c: Point) = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x)
 
 
 fun findMaxDist(points: List<Point>, point: Point): Pair<Double, Segment> {

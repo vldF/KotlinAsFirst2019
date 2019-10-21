@@ -137,6 +137,15 @@ class Tests {
     @Test
     @Tag("Normal")
     fun diameter() {
+        assertEquals(
+            0.30045756848775795,
+            diameter(
+                Point(0.14298363034709938, 2.220446049250313e-16),
+                Point(0.0, 2.220446049250313e-16),
+                Point(-5e-324, 2.220446049250313e-16),
+                Point(2.220446049250313e-16, 0.264254483243596)
+            ).len()
+        )
         val p1 = Point(0.0, 0.0)
         val p2 = Point(1.0, 4.0)
         val p3 = Point(-2.0, 2.0)

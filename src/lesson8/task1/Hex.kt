@@ -325,9 +325,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         minRadius += toAdd
         val unions = mutableListOf<Set<HexPoint>>()
         // Этот ужас потом поправлю
-        unions.add(Hexagon(a, minRadius).getRing() + Hexagon(a, minRadius - 1).getRing() + Hexagon(a, minRadius + 1).getRing() + Hexagon(a, minRadius - 2).getRing())
-        unions.add(Hexagon(b, minRadius).getRing() + Hexagon(b, minRadius - 1).getRing() + Hexagon(b, minRadius + 1).getRing() + Hexagon(b, minRadius - 2).getRing())
-        unions.add(Hexagon(c, minRadius).getRing() + Hexagon(c, minRadius - 1).getRing() + Hexagon(c, minRadius + 1).getRing() + Hexagon(c, minRadius - 2).getRing())
+        unions.add(Hexagon(a, minRadius).getRing() + Hexagon(a, minRadius - 1).getRing() + Hexagon(a, minRadius + 1).getRing() + Hexagon(a, minRadius - 2).getRing() + Hexagon(a, minRadius - 3).getRing() + Hexagon(a, minRadius + 3).getRing())
+        unions.add(Hexagon(b, minRadius).getRing() + Hexagon(b, minRadius - 1).getRing() + Hexagon(b, minRadius + 1).getRing() + Hexagon(b, minRadius - 2).getRing() + Hexagon(b, minRadius - 3).getRing() + Hexagon(b, minRadius + 3).getRing())
+        unions.add(Hexagon(c, minRadius).getRing() + Hexagon(c, minRadius - 1).getRing() + Hexagon(c, minRadius + 1).getRing() + Hexagon(c, minRadius - 2).getRing() + Hexagon(c, minRadius - 3).getRing() + Hexagon(c, minRadius + 3).getRing())
 
         var intersect = unions.first()
         for (hexSet in unions) {
