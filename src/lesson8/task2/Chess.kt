@@ -13,7 +13,7 @@ val knightMoves = listOf(-2 to -1, -2 to 1, -1 to 2, 1 to 2, 2 to 1, 2 to -1, -1
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
  * Горизонтали нумеруются снизу вверх, вертикали слева направо.
  */
-data class Square(var column: Int, var row: Int) {
+data class Square(val column: Int, val row: Int) {
     /**
      * Пример
      *
@@ -218,12 +218,12 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     require(start.inside() && end.inside())
     val moves = mutableListOf<Square>()
     moves.add(start.copy())
-    while (start != end) {
-        val deltaX = (end.row - start.row).sign
-        val deltaY = (end.column - start.column).sign
-        start.row += deltaX
-        start.column += deltaY
-        moves.add(start.copy())
+    var currentSquare = start.copy()
+    while (currentSquare != end) {
+        val deltaX = (end.row - currentSquare.row).sign
+        val deltaY = (end.column - currentSquare.column).sign
+        currentSquare = Square(currentSquare.column + deltaY, currentSquare.row + deltaX)
+        moves.add(currentSquare.copy())
     }
     return moves
 }

@@ -491,7 +491,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             referenceFirst[y, x] = y * 4 + x + 1
         }
     }
-    val referenceSecond = referenceFirst.copy()
+    val referenceSecond = referenceFirst.matrixCopy()
     referenceFirst[3, 3] = 0
     referenceSecond[3, 3] = 0
     referenceSecond[3, 1] = 15
@@ -513,7 +513,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
         setOfClosedFields.add(currentState.field)
         listOfOpenedStates.remove(currentState)
         for (move in currentState.findCellsNeighbours()) {
-            val newField = currentState.field.copy()
+            val newField = currentState.field.matrixCopy()
             val newMovies = currentState.movies.toMutableList()
             newMovies.add(newField[move])
 
@@ -534,7 +534,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     }
 }
 
-fun Matrix<Int>.copy(): Matrix<Int> {
+fun Matrix<Int>.matrixCopy(): Matrix<Int> {
     val res = MatrixImpl(height, width, -1)
     for (i in 0 until height) {
         for (j in 0 until width) {

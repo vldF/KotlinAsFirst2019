@@ -373,6 +373,8 @@ fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0):
  *       03  04  05  06
  */
 fun minContainingHexagon(vararg pts: HexPoint): Hexagon {
+    require(pts.isNotEmpty())
+    if (pts.size == 1) return Hexagon(pts.first(), 0)
     val points = pts.toSet()
     val pointsArray = pts.toList().toTypedArray()
     var startRadius = 1
