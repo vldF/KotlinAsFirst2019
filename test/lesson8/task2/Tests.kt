@@ -142,6 +142,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun knightMoveNumber() {
+        assertEquals(3, knightMoveNumber(Square(4, 2), Square(1, 8)))
         assertEquals(0, knightMoveNumber(square("d3"), square("d3")))
         assertEquals(1, knightMoveNumber(square("e4"), square("d6")))
         assertEquals(2, knightMoveNumber(square("f5"), square("g6")))
