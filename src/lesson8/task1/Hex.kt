@@ -329,6 +329,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
             break
         }
     }
+    if (minRadius > maxRadius) {
+        minRadius = maxRadius / 2
+    }
     return findIntersect(a, b, c, maxRadius = maxRadius, minRadius = minRadius)
 }
 
