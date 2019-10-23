@@ -280,7 +280,7 @@ fun knightTrajectory(start: Square, end: Square): List<Square> {
     val openedStates = PriorityQueue<ChessGameState>(compareBy { it.f })
     val closedMoves = mutableSetOf<Square>()
 
-    val firstState = ChessGameState(start, 0, mutableListOf(start), end)
+    val firstState = ChessGameState(start.copy(), 0, mutableListOf(start), end)
     firstState.calcH()
     openedStates.add(firstState)
 

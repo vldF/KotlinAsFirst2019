@@ -399,6 +399,12 @@ class Tests {
     fun fifteenGameSolution() {
         createMatrix(
             4, 4, listOf(
+                listOf(13, 7, 2, 14), listOf(1, 10, 0, 15),
+                listOf(9, 4, 6, 3), listOf(12, 5, 8, 11)
+            )
+        ).assertSolution()
+        createMatrix(
+            4, 4, listOf(
                 listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
                 listOf(9, 0, 10, 11), listOf(13, 14, 15, 12)
             )
