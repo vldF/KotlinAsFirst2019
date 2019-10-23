@@ -307,30 +307,39 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     var maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    val toAdd = maxRadius / (if (maxRadius / 100 > 0) 100 else 10) + 1
-    var minRadius = -toAdd + 1
+    val toAdd = max(1, maxRadius / 20)
+    var minRadius = maxRadius / 2 - toAdd
+    var globalMinDistBtwIntersect = Int.MAX_VALUE
     while (minRadius <= maxRadius) {
         minRadius += toAdd
+        val h1 = Hexagon(a, minRadius)
+        val h2 = Hexagon(b, minRadius)
+        val h3 = Hexagon(c, minRadius)
 
-        val unionA = mutableSetOf<HexPoint>()
-        val unionB = mutableSetOf<HexPoint>()
-        val unionC = mutableSetOf<HexPoint>()
+        val unionA = h1.getRing()
+        val unionB = h2.getRing()
+        val unionC = h3.getRing()
 
-        for (i in -2..2) {
-            unionA.addAll(Hexagon(a, minRadius + i).getRing())
-            unionB.addAll(Hexagon(b, minRadius + i).getRing())
-            unionC.addAll(Hexagon(c, minRadius + i).getRing())
+        val intersectAB = unionA.intersect(unionB)
+        val intersectAC = unionA.intersect(unionC)
+        val intersectBC = unionB.intersect(unionC)
+
+        var minDist = Int.MAX_VALUE
+        for (i in intersectAB) {
+            for (j in intersectBC) {
+                for (k in intersectAC) {
+                    if (!(h3.contains(i) && h2.contains(k) && h1.contains(j))) continue
+                    minDist = min(minDist, i.distance(j) + j.distance(k) + k.distance(i))
+                }
+            }
         }
-
-        val intersect = unionA.intersect(unionB).intersect(unionC)
-        if (intersect.isNotEmpty()) {
-            maxRadius = minRadius + 100
-            minRadius -= toAdd
+        if (minDist == Int.MAX_VALUE) continue
+        if (minDist < globalMinDistBtwIntersect) globalMinDistBtwIntersect = minDist
+        else {
+            maxRadius = minRadius
+            minRadius -= toAdd * 2
             break
         }
-    }
-    if (minRadius > maxRadius) {
-        minRadius = maxRadius / 2
     }
     return findIntersect(a, b, c, maxRadius = maxRadius, minRadius = minRadius)
 }
