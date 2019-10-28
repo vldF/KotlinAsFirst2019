@@ -306,10 +306,15 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
  * Проверяем, что все наши точки лежат в этом кольце
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
-    fun calcDistBtwIntersection(radius: Int): Pair<Int, HexPoint> {
-        val h1 = Hexagon(a, radius)
-        val h2 = Hexagon(b, radius)
-        val h3 = Hexagon(c, radius)
+    var maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
+    val toAdd = max(1, maxRadius / 20)
+    var minRadius = maxRadius / 2 - toAdd
+    var globalMinDistBtwIntersect = Int.MAX_VALUE
+    while (minRadius <= maxRadius) {
+        minRadius += toAdd
+        val h1 = Hexagon(a, minRadius)
+        val h2 = Hexagon(b, minRadius)
+        val h3 = Hexagon(c, minRadius)
 
         val unionA = h1.getRing()
         val unionB = h2.getRing()
@@ -320,46 +325,50 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         val intersectBC = unionB.intersect(unionC)
 
         var minDist = Int.MAX_VALUE
-        var minPoint = HexPoint(-1, -1)
         for (i in intersectAB) {
+            if (!h3.contains(i)) continue
             for (j in intersectBC) {
+                if (!h1.contains(j)) continue
                 for (k in intersectAC) {
-                    val d = i.distance(j) + j.distance(k) + k.distance(i)
-                    if (d < minDist) {
-                        minDist = d
-                        minPoint = i
-                    }
+                    if (!h2.contains(k)) continue
+                    minDist = min(minDist, i.distance(j) + j.distance(k) + k.distance(i))
                 }
             }
         }
-        return minDist to minPoint
-    }
-
-    var minRadius = 0
-    var maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
-    var middleRadius: Int
-
-    while (true) {
-        middleRadius = (maxRadius + minRadius) / 2
-        val (d1, c1) = calcDistBtwIntersection((minRadius + middleRadius) / 2)
-        val (d2, c2) = calcDistBtwIntersection((maxRadius + middleRadius) / 2)
-        val (d3, c3) = calcDistBtwIntersection(middleRadius)
-        when {
-            d1 == 0 -> return Hexagon(c1, (minRadius + middleRadius) / 2)
-            d2 == 0 -> return Hexagon(c2, (maxRadius + middleRadius) / 2)
-            d3 == 0 -> return Hexagon(c3, middleRadius)
-            d1 < d2 -> {
-                if (maxRadius == middleRadius - 1) return null
-                maxRadius = middleRadius - 1
-            }
-            else -> {
-                if (minRadius == middleRadius + 1) return null
-                minRadius = middleRadius + 1
-            }
+        if (minDist == Int.MAX_VALUE) continue
+        if (minDist < globalMinDistBtwIntersect) globalMinDistBtwIntersect = minDist
+        else {
+            maxRadius = minRadius
+            minRadius -= toAdd * 2
+            break
         }
-
-
     }
+    if (minRadius > maxRadius && globalMinDistBtwIntersect != Int.MAX_VALUE) {
+        minRadius = maxRadius - toAdd
+    }
+    return findIntersect(a, b, c, maxRadius = maxRadius, minRadius = minRadius)
+}
+
+
+fun findIntersect(vararg centers: HexPoint, maxRadius: Int, minRadius: Int = 0): Hexagon? {
+    for (r in minRadius..maxRadius) {
+        val unions = mutableListOf<Set<HexPoint>>()
+        for (center in centers) {
+            val hexSet = Hexagon(center, r).getRing()
+            unions.add(hexSet)
+        }
+        var intersect = unions.first()
+        for (hexSet in unions) {
+            intersect = intersect.intersect(hexSet)
+        }
+        for (c in intersect) {
+            val hexagonRing = Hexagon(c, r).getRing()
+            return if (centers.all { hexagonRing.contains(it) })
+                Hexagon(c, r)
+            else null
+        }
+    }
+    return null
 }
 
 
