@@ -136,10 +136,6 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, defaultVa
         return res.toString()
     }
 
-    override fun hashCode(): Int {
-        var result = height
-        result = 31 * result + width
-        return result
-    }
+    override fun hashCode() = data.hashCode()
 }
 

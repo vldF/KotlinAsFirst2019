@@ -121,6 +121,7 @@ fun diameter(vararg pts: Point): Segment {
     require(pts.isNotEmpty())
 
     val points = pts.toSet().toMutableList()
+    if (pts.size == 2) return Segment(pts[0], pts[1])
 
     // Найдём стартовую точку
     // Не просто ищем, а переставляем ее в самое начало списка

@@ -279,23 +279,31 @@ fun knightTrajectory(start: Square, end: Square): List<Square> {
     // Алгоритм А*
     val openedStates = PriorityQueue<ChessGameState>(compareBy { it.f })
     val closedMoves = mutableSetOf<Square>()
+    val closedStates = mutableSetOf<ChessGameState>()
+    var ans = listOf<Square>()
 
     val firstState = ChessGameState(start.copy(), 0, mutableListOf(start), end)
     firstState.calcH()
     openedStates.add(firstState)
 
-    while (true) {
+    while (openedStates.isNotEmpty()) {
         val currentState = openedStates.poll()
-        if (currentState.coords == end) return currentState.moves
+        if (currentState.coords == end) {
+            if (ans.isEmpty() || currentState.moves.size <= ans.size) ans = currentState.moves
+            continue
+        }
         closedMoves.add(currentState.coords)
+        closedStates.add(currentState)
         for (move in currentState.getNeighbors()) {
-            if (move in closedMoves)
-                continue
             val moves = currentState.moves.toMutableList()
             moves.add(move)
             val newState = ChessGameState(move, moves.size, moves, end)
             newState.calcH()
-
+            if (move in closedMoves) {
+                val oldVersionOfMove = closedStates.find { it.coords == move }!!
+                if (oldVersionOfMove.f <= newState.f)
+                    continue
+            }
             val g = openedStates.find { it.coords == move }
             if (g != null) {
                 if (g.f > newState.f) openedStates.remove(g)
@@ -304,9 +312,11 @@ fun knightTrajectory(start: Square, end: Square): List<Square> {
             openedStates.add(newState)
         }
     }
+    return ans
 }
 
 class ChessGameState(var coords: Square, var f: Int, var moves: MutableList<Square>, private val end: Square) {
+
     fun calcH() {
         f += abs(coords.column - end.column) + abs(coords.row - end.row)
     }

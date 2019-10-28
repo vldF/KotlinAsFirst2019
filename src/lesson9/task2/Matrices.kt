@@ -506,7 +506,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             }
         }
     }
-    val firstState = GameState(matrix, null, 0, zero, mutableListOf())
+    val firstState = GameState(matrix, zero, mutableListOf())
     listOfOpenedStates.add(firstState)
     while (true) {
         val currentState = listOfOpenedStates.poll()
@@ -522,7 +522,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             if (newField in setOfClosedFields || newField in setOfOpenedFields) {
                 continue
             }
-            val newState = GameState(newField, currentState, 0, move, newMovies)
+            val newState = GameState(newField, move, newMovies)
             newState.calcH()
 
             if (newField == referenceFirst || newField == referenceSecond) {
@@ -546,20 +546,26 @@ fun Matrix<Int>.matrixCopy(): Matrix<Int> {
 
 class GameState(
     val field: Matrix<Int>,
-    var parent: GameState?,
-    var f: Int,
     val zero: Cell,
     val movies: MutableList<Int>
 ) {
-    fun calcH() {
+    val f: Int
+
+    init {
+        f = calcH()
+    }
+
+    fun calcH(): Int {
+        var hScore = 0
         for (x in 0 until 4) {
             for (y in 0 until 4) {
                 if (field[y, x] != y * 4 + x + 1) {
-                    f += if (field[y, x] == 0) abs(x - 3) + abs(y - 3)
+                    hScore += if (field[y, x] == 0) abs(x - 3) + abs(y - 3)
                     else abs((field[y, x] - 1) % 4 - x) + abs(field[y, x] / 4 - y)
                 }
             }
         }
+        return hScore
     }
 
     fun findCellsNeighbours(): MutableList<Cell> {
