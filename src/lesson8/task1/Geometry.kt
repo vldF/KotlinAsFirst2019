@@ -122,7 +122,6 @@ fun diameter(vararg pts: Point): Segment {
 
     val points = pts.toSet().toMutableList()
     if (pts.size == 2) return Segment(pts[0], pts[1])
-
     // Найдём стартовую точку
     // Не просто ищем, а переставляем ее в самое начало списка
     // Это нужно для успешного выхода из цикла ниже
@@ -135,8 +134,8 @@ fun diameter(vararg pts: Point): Segment {
 
     // Ищем вторую точку, которая так же лежит на границе
     // Через поворот (векторное произведение, если оно больше 0, то точка лежит слева
+    // Этот кусок кода только для удобства, можно было поместить его в цикл ниже
     val listBorderPoints = mutableListOf(startPoint)
-    var maxCos = -2.0
     var secondPoint = points[1]
     for (p in points.slice((2 until points.size))) {
         if (vectorRotate(startPoint, secondPoint, p) > 0) {
@@ -146,19 +145,11 @@ fun diameter(vararg pts: Point): Segment {
     listBorderPoints.add(secondPoint)
 
     var maxDist = -1.0
-    // Через две последние точки в списке граничных точек множества "проводим" прямую
-    // Затем перебираем все точки и через последнюю граничную точку и каждую из них "проводим" другую прямую
-    // Находим такую точку из списка, что косинус между этими прямыми максимален (угол максимален
-    // Параллельно находим расстояние
     var farthestPoints = Segment(Point(-1.0, -1.0), Point(-1.0, -1.0))
     while (startPoint != listBorderPoints.last()) {
-        maxCos = -2.0
-        var newPoint = Point(-1.0, -1.0)
+        var newPoint = listBorderPoints.first()
         for (p in points) {
-            val cos =
-                cosLines(listBorderPoints[listBorderPoints.size - 2], listBorderPoints[listBorderPoints.size - 1], p)
-            if (cos > maxCos) {
-                maxCos = cos
+            if (vectorRotate(listBorderPoints.last(), newPoint, p) > 0) {
                 newPoint = p
             }
         }

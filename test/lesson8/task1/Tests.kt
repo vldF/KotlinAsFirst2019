@@ -138,6 +138,14 @@ class Tests {
     @Tag("Normal")
     fun diameter() {
         assertEquals(
+            632.6834074276445,
+            diameter(
+                Point(5e-324, 0.6834074276445012),
+                Point(5e-324, -632.0),
+                Point(-5e-324, 0.4873057058089465)
+            ).len()
+        )
+        assertEquals(
             0.30045756848775795,
             diameter(
                 Point(0.14298363034709938, 2.220446049250313e-16),
