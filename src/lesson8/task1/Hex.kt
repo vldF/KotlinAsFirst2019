@@ -308,7 +308,7 @@ fun lerp(a: Double, b: Double, t: Double) = a + (b - a) * t
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
     var maxRadius = maxOf(a.distance(b), b.distance(c), c.distance(a))
     val toAdd = max(1, maxRadius / 20)
-    var minRadius = maxRadius / 2 - toAdd
+    var minRadius = maxRadius * 2 / 5
     var globalMinDistBtwIntersect = Int.MAX_VALUE
     while (minRadius <= maxRadius) {
         minRadius += toAdd
