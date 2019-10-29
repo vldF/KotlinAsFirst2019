@@ -383,27 +383,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val res = StringBuilder("<html><body>")
-    val originalText = File(inputName).readLines()
-    var paragraphBuffer = StringBuffer()
-
-    for (line in originalText) {
-        if (line == "\n" || line == "") {
-            res.append(paragraphBuffer).append("</p>")
-            paragraphBuffer = StringBuffer()
-            continue
-        }
-        if (paragraphBuffer.isEmpty()) paragraphBuffer.append("<p>")
-        var sTmp = replaceCharsToTag(line, "**", "<b>", "</b>")
-        sTmp = replaceCharsToTag(sTmp, "*", "<i>", "</i>")
-        sTmp = replaceCharsToTag(sTmp, "~~", "<s>", "</s>")
-        paragraphBuffer.append(sTmp)
-    }
-    if (paragraphBuffer.isNotBlank()) {
-        res.append(paragraphBuffer).append("</p>")
-    }
-    res.append("</body></html>")
-    File(outputName).writeText(res.toString())
+    TODO()
 }
 
 fun replaceCharsToTag(str: String, s: String, openTag: String, closeTag: String): String {
