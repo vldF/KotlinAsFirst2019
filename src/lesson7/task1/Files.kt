@@ -523,47 +523,8 @@ fun replaceCharsToTag(str: String, s: String, openTag: String, closeTag: String)
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
-fun markdownToHtmlLists(inputName: String, outputName: String) {
-    // Не доделал и нет идей, как доделать
-    val inp = File(inputName).readLines()
-    val olIdxRegex = "^\\s*(\\d+)\\.\\s".toRegex() // todo remember to use 1 group
-    val isUlRegex = "^\\s*[*]".toRegex()
-    val olContentRegex = "^\\s*\\d+\\.\\s(.*)".toRegex()
-    val ulContentRegex = "^\\s*\\*\\s(.+)".toRegex() // todo 1 group
-    val res = Node("html", StringBuilder())
-    res.insertedTags.add(Node("body", StringBuilder()))
+fun markdownToHtmlLists(inputName: String, outputName: String): Unit = TODO()
 
-    for (lineIdx in inp.indices) {
-        val line = inp[lineIdx]
-        val currentSpaces = getSpaces(line)
-        val tag = when {
-            isUlRegex.find(line) != null -> "ul"
-            olIdxRegex.find(line)?.groupValues != null -> "ol"
-            else -> ""
-        }
-        val content = when (tag) {
-            "ol" -> olContentRegex.find(line)!!.value
-            else -> ulContentRegex.find(line)?.groupValues?.get(1) ?: ""
-        }
-        val lvl = res.getNodeByLvl(currentSpaces / 4 + 2)
-        if (tag.isNotEmpty()) {
-            val prevSpaces = if (lineIdx > 0) getSpaces(inp[lineIdx - 1]) else -1
-            var pointer: Node
-            pointer = when {
-                prevSpaces == -1 -> lvl.add(Node(tag))
-                prevSpaces < currentSpaces -> lvl.add(Node(tag))
-                prevSpaces == currentSpaces -> lvl.insertedTags.last()
-                else -> res.getNodeByLvl(currentSpaces / 4 + 1)
-            }
-            pointer.add(Node("li", StringBuilder(content)))
-        } else {
-            lvl.content.append(line)
-        }
-    }
-    File(outputName).writeText(res.getText())
-}
-
-fun getSpaces(str: String): Int = "^\\s*".toRegex().find(str)?.value?.length ?: 0
 
 /**
  * Очень сложная
