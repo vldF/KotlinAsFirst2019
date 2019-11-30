@@ -402,7 +402,7 @@ fun minContainingHexagon(vararg pts: HexPoint): Hexagon {
         val (minRadius, maxRadius, hexagon) = findRadius(startRadius, endRadius, pointsArray, points)
         if (minRadius == maxRadius)
             return hexagon
-        startRadius = minRadius
+        startRadius = minRadius - 1
         endRadius = maxRadius
     }
 }
